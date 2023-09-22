@@ -1,0 +1,87 @@
+pragma ever-solidity >= 0.71.0;
+
+///////////////
+// Constants //
+///////////////
+uint128 constant VALID_TOTAL_SHARE = 1000000000;
+uint16 constant ONLY_OWNER_ERROR = 101;
+uint16 constant INVALID_TOTAL_SHARE_ERROR = 102;
+
+////////////////
+// Structures //
+////////////////
+struct Receiver {
+    address wallet;
+    // Share in nano
+    // Examples
+    //   1_000_000_000 means that 100% of received coins will be sent to the wallet
+    //     500_000_000 means that 50% of received coins will be sent to the wallet
+    //     100_000_000 means that 10% of received coins will be sent to the wallet
+    uint32 share;
+}
+
+contract Converter {
+    ///////////////
+    // Modifiers //
+    ///////////////
+    modifier accept {
+        tvm.accept();
+        _;
+    }
+
+    modifier onlyOwner {
+        require(_owner == msg.sender, ONLY_OWNER_ERROR);
+        _;
+    }
+
+    modifier shareIs100Percent(Receiver[] receivers) {
+        uint64 total;
+        for (uint8 i; i < receivers.length; i++)
+            total += receivers[i].share;
+        require(total == VALID_TOTAL_SHARE, INVALID_TOTAL_SHARE_ERROR);
+        _;
+    }
+
+    ///////////////
+    // Variables //
+    ///////////////
+    address private _owner;
+    // COINS to TOKEN ratio in nano
+    // Examples
+    //   2_000_000_000 means 2 COINS for 1 TOKEN
+    //   1_000_000_000 means 1 COINS for 1 TOKEN
+    //     500_000_000 means 0.5 COINS for 1 TOKEN
+    uint128 private _ratio;
+    Receiver[] private _receivers;
+
+    /////////////////
+    // Constructor //
+    /////////////////
+    constructor(address owner, uint128 ratio, Receiver[] receivers) accept shareIs100Percent(receivers) {
+        _owner = owner;
+        _ratio = ratio;
+        _receivers = receivers;
+    }
+
+    ////////////////////////////
+    // External // Only owner //
+    ////////////////////////////
+    function changeOwner(address owner) public onlyOwner accept {
+        _owner = owner;
+    }
+
+    function changeRatio(uint128 ratio) public onlyOwner accept {
+        _ratio = ratio;
+    }
+
+    function changeReceivers(Receiver[] receivers) public onlyOwner accept shareIs100Percent(receivers) {
+        _receivers = receivers;
+    }
+
+    ////////////
+    // Getter //
+    ////////////
+    function info() public view returns (address owner, uint128 ratio, Receiver[] receivers) {
+        return (_owner, _ratio, _receivers);
+    }
+}
