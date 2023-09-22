@@ -12,11 +12,11 @@ uint16 constant INVALID_TOTAL_SHARE_ERROR = 102;
 ////////////////
 struct Receiver {
     address wallet;
-    // Share in nano
-    // Examples
-    //   1_000_000_000 means that 100% of received coins will be sent to the wallet
-    //     500_000_000 means that 50% of received coins will be sent to the wallet
-    //     100_000_000 means that 10% of received coins will be sent to the wallet
+    /**
+     * 1_000_000_000 means 100% of received coins will be sent to the wallet
+     *   500_000_000 means 50%  of received coins will be sent to the wallet
+     *   100_000_000 means 10%  of received coins will be sent to the wallet
+     */
     uint32 share;
 }
 
@@ -58,13 +58,14 @@ contract Converter {
     // Variables //
     ///////////////
     address private _owner;
-    // COINS to TOKEN ratio in nano
-    // Examples
-    //   2_000_000_000 means 2 COINS for 1 TOKEN
-    //   1_000_000_000 means 1 COINS for 1 TOKEN
-    //     500_000_000 means 0.5 COINS for 1 TOKEN
+    /**
+     * 2_000_000_000 means 2   COINS for 1 TOKEN
+     * 1_000_000_000 means 1   COINS for 1 TOKEN
+     *   500_000_000 means 0.5 COINS for 1 TOKEN
+     */
     uint128 private _ratio;
     Receiver[] private _receivers;
+    address private _wallet;
 
     /////////////////
     // Constructor //
@@ -74,11 +75,13 @@ contract Converter {
         uint128 ratio,
         Receiver[] receivers,
         uint128 balance,
-        address recipient
+        address recipient,
+        address wallet
     ) accept reserveBalance(balance, recipient) shareIs100Percent(receivers) {
         _owner = owner;
         _ratio = ratio;
         _receivers = receivers;
+        _wallet = wallet;
     }
 
     ////////////////////////////
@@ -96,10 +99,14 @@ contract Converter {
         _receivers = receivers;
     }
 
+    function changeWallet(address wallet) public onlyOwner giveChange {
+        _wallet = wallet;
+    }
+
     ////////////
     // Getter //
     ////////////
-    function info() public view returns (address owner, uint128 ratio, Receiver[] receivers) {
-        return (_owner, _ratio, _receivers);
+    function info() public view returns (address owner, uint128 ratio, Receiver[] receivers, address wallet) {
+        return (_owner, _ratio, _receivers, _wallet);
     }
 }

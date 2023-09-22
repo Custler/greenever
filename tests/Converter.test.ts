@@ -25,6 +25,7 @@ type ConstructorInput = {
   }>
   balance: string | number | bigint
   recipient: string
+  wallet: string
 }
 
 async function getConverterConstructorInput (): Promise<ConstructorInput> {
@@ -38,7 +39,8 @@ async function getConverterConstructorInput (): Promise<ConstructorInput> {
       }
     ],
     balance: CONVERTER_BALANCE_VALUE,
-    recipient: await Global.giver.contract.address()
+    recipient: await Global.giver.contract.address(),
+    wallet: ZERO_ADDRESS
   }
 }
 
@@ -168,5 +170,25 @@ describe('Converter', function () {
     catch (error: any) {
       assert.equal(error.data.exit_code, 102)
     }
+  })
+
+  it('change wallet', async (): Promise<void> => {
+    const owner = await createOwner()
+    const converter = await createConverter({ owner: await owner.address() })
+
+    const newWallet = await createRandomAddress()
+    await owner.call.sendTransaction({
+      dest: await converter.address(),
+      value: OWNER_CALL_VALUE,
+      bounce: true,
+      flags: 0,
+      payload: await converter.payload.changeWallet({ wallet: newWallet })
+    })
+    await converter.wait()
+    await owner.wait()
+    await terminateOwner(owner)
+
+    const info = await converter.run.info()
+    assert.equal(info.wallet, newWallet.toString())
   })
 })
