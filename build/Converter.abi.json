@@ -8,7 +8,9 @@
 			"inputs": [
 				{"name":"owner","type":"address"},
 				{"name":"ratio","type":"uint128"},
-				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"}
+				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
+				{"name":"balance","type":"uint128"},
+				{"name":"recipient","type":"address"}
 			],
 			"outputs": [
 			]

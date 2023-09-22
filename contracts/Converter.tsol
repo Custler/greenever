@@ -34,6 +34,18 @@ contract Converter {
         _;
     }
 
+    modifier reserveBalance (uint128 balance, address recipient) {
+        tvm.rawReserve(balance, 2);
+        _;
+        recipient.transfer(0, false, 128);
+    }
+
+    modifier giveChange () {
+        tvm.rawReserve(address(this).balance - msg.value, 2);
+        _;
+        msg.sender.transfer(0, false, 128);
+    }
+
     modifier shareIs100Percent(Receiver[] receivers) {
         uint64 total;
         for (uint8 i; i < receivers.length; i++)
@@ -57,7 +69,13 @@ contract Converter {
     /////////////////
     // Constructor //
     /////////////////
-    constructor(address owner, uint128 ratio, Receiver[] receivers) accept shareIs100Percent(receivers) {
+    constructor(
+        address owner,
+        uint128 ratio,
+        Receiver[] receivers,
+        uint128 balance,
+        address recipient
+    ) accept reserveBalance(balance, recipient) shareIs100Percent(receivers) {
         _owner = owner;
         _ratio = ratio;
         _receivers = receivers;
@@ -66,15 +84,15 @@ contract Converter {
     ////////////////////////////
     // External // Only owner //
     ////////////////////////////
-    function changeOwner(address owner) public onlyOwner accept {
+    function changeOwner(address owner) public onlyOwner giveChange {
         _owner = owner;
     }
 
-    function changeRatio(uint128 ratio) public onlyOwner accept {
+    function changeRatio(uint128 ratio) public onlyOwner giveChange {
         _ratio = ratio;
     }
 
-    function changeReceivers(Receiver[] receivers) public onlyOwner accept shareIs100Percent(receivers) {
+    function changeReceivers(Receiver[] receivers) public onlyOwner giveChange shareIs100Percent(receivers) {
         _receivers = receivers;
     }
 

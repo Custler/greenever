@@ -1,6 +1,20 @@
 import { assert } from 'chai'
 import { Converter } from '../build'
-import { AccountType, B, generateRandomKeyPair, SafeMultisigWallet, x0, ZERO_ADDRESS } from 'vasku'
+import {
+  AccountType,
+  B,
+  createTransferPayload,
+  generateRandomKeyPair,
+  Global,
+  SafeMultisigWallet,
+  x0,
+  ZERO_ADDRESS
+} from 'vasku'
+
+const CONVERTER_DEPLOY_VALUE = 0.1 * B
+const CONVERTER_BALANCE_VALUE = 0.01 * B
+const OWNER_DEPLOY_VALUE = 0.2 * B
+const OWNER_CALL_VALUE = 0.1 * B
 
 type ConstructorInput = {
   owner: string
@@ -9,31 +23,32 @@ type ConstructorInput = {
     wallet: string
     share: string | number | bigint
   }>
+  balance: string | number | bigint
+  recipient: string
 }
 
-const CONVERTER_DEPLOY_VALUE = 0.04 * B
-const OWNER_DEPLOY_VALUE = 0.2 * B
-const OWNER_CALL_VALUE = 0.1 * B
-const DEFAULT_CONVERTER_CONSTRUCTOR_INPUT = {
-  owner: ZERO_ADDRESS,
-  ratio: 1e9,
-  receivers: [
-    {
-      wallet: ZERO_ADDRESS,
-      share: 1e9
-    }
-  ]
+async function getConverterConstructorInput (): Promise<ConstructorInput> {
+  return {
+    owner: ZERO_ADDRESS,
+    ratio: 1e9,
+    receivers: [
+      {
+        wallet: ZERO_ADDRESS,
+        share: 1e9
+      }
+    ],
+    balance: CONVERTER_BALANCE_VALUE,
+    recipient: await Global.giver.contract.address()
+  }
 }
 
 async function createConverter (
-  constructorInput: Partial<ConstructorInput> = DEFAULT_CONVERTER_CONSTRUCTOR_INPUT,
+  constructorInput: any = undefined,
   deployValue: number = CONVERTER_DEPLOY_VALUE
 ): Promise<Converter> {
   const converter = new Converter()
-  await converter.deploy(deployValue, {
-    ...DEFAULT_CONVERTER_CONSTRUCTOR_INPUT,
-    ...constructorInput
-  })
+  const input = await getConverterConstructorInput()
+  await converter.deploy(deployValue,constructorInput === undefined ? input : { ...input, ...constructorInput })
   return converter
 }
 
@@ -46,19 +61,30 @@ async function createOwner (
   return wallet
 }
 
+async function terminateOwner (owner: SafeMultisigWallet): Promise<void> {
+  await owner.call.sendTransaction({
+    dest: await Global.giver.contract.address(),
+    value: 0,
+    bounce: false,
+    flags: 128 + 32,
+    payload: await createTransferPayload()
+  })
+}
+
 async function createRandomAddress (): Promise<string> {
   return await (new SafeMultisigWallet()).address()
 }
 
 describe('Converter', function () {
   it('deploy and get info', async (): Promise<void> => {
-    const converter = await createConverter()
+    const input = await getConverterConstructorInput()
+    const converter = await createConverter(input)
     const accountType = await converter.accountType()
     const info = await converter.run.info()
     assert.equal(accountType, AccountType.active)
-    assert.equal(info.owner, DEFAULT_CONVERTER_CONSTRUCTOR_INPUT.owner)
-    assert.equal(info.ratio, DEFAULT_CONVERTER_CONSTRUCTOR_INPUT.ratio.toString())
-    assert.equal(info.receivers.toString(), DEFAULT_CONVERTER_CONSTRUCTOR_INPUT.receivers.toString())
+    assert.equal(info.owner, input.owner)
+    assert.equal(info.ratio, input.ratio.toString())
+    assert.equal(info.receivers.toString(), input.receivers.toString())
   })
 
   it('change owner', async (): Promise<void> => {
@@ -74,6 +100,8 @@ describe('Converter', function () {
       payload: await converter.payload.changeOwner({ owner: newOwnerAddress })
     })
     await converter.wait()
+    await owner.wait()
+    await terminateOwner(owner)
 
     const info = await converter.run.info()
     assert.equal(info.owner, newOwnerAddress)
@@ -92,6 +120,8 @@ describe('Converter', function () {
       payload: await converter.payload.changeRatio({ ratio: newRatio })
     })
     await converter.wait()
+    await owner.wait()
+    await terminateOwner(owner)
 
     const info = await converter.run.info()
     assert.equal(info.ratio, newRatio.toString())
@@ -119,6 +149,8 @@ describe('Converter', function () {
       payload: await converter.payload.changeReceivers({ receivers: newReceivers })
     })
     await converter.wait()
+    await owner.wait()
+    await terminateOwner(owner)
 
     const info = await converter.run.info()
     assert.equal(info.receivers.toString(), newReceivers.toString())

@@ -8,6 +8,8 @@ type constructorIn = {
     wallet: string
     share: string | number | bigint
   }>
+  balance: string | number | bigint
+  recipient: string
 }
 type changeOwnerIn = {
   owner: string
