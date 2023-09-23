@@ -143,6 +143,6 @@ describe('Converter spec', function () {
     await converter.wait()
     assert.equal(BOB_TOKENS.toString(), bobTokenWalletBalance)
 
-    assert.isTrue(true)
+    // TODO check funds
   })
 })
