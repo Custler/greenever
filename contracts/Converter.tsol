@@ -3,9 +3,12 @@ pragma ever-solidity >= 0.71.0;
 ///////////////
 // Constants //
 ///////////////
-uint128 constant VALID_TOTAL_SHARE = 1000000000;
 uint128 constant MAXIMUM_RECEIVERS = 16;
+uint128 constant VALID_RECEIVERS_TOTAL_SHARE = 1000000000;
 
+////////////
+// Errors //
+////////////
 uint16 constant ONLY_OWNER_ERROR = 101;
 uint16 constant INVALID_RECEIVERS_TOTAL_SHARE_ERROR = 102;
 uint16 constant TOO_MUCH_RECEIVERS_ERROR = 103;
@@ -16,15 +19,23 @@ uint16 constant TOO_MUCH_RECEIVERS_ERROR = 103;
 struct Receiver {
     address wallet;
     /**
-     * 1_000_000_000 means 100% of received coins will be sent to the wallet
-     *   500_000_000 means 50%  of received coins will be sent to the wallet
-     *   100_000_000 means 10%  of received coins will be sent to the wallet
+     * 1_000_000_000 means 100% of received COINs will be sent to the wallet
+     *   500_000_000 means 50%  of received COINs will be sent to the wallet
+     *   100_000_000 means 10%  of received COINs will be sent to the wallet
      */
     uint32 share;
 }
 
 /**
- * Convert COINS to TOKENS
+ * Convert COINs to TOKENs and send COINs to receivers
+ *
+ * Legend
+ *   COIN  - native blockchain coin e.g. EVER
+ *   TOKEN - TIP3 token implementation https://github.com/broxus/tip3
+ *
+ * TIP3 standard
+ *   https://github.com/everscale-org/docs/blob/main/src/standard/TIP-3/1.md
+ *   https://github.com/everscale-org/docs/blob/main/src/standard/TIP-3/2.md
  */
 contract Converter {
     ///////////////
@@ -57,7 +68,7 @@ contract Converter {
         uint64 total;
         for (uint8 i; i < receivers.length; i++)
             total += receivers[i].share;
-        require(total == VALID_TOTAL_SHARE, INVALID_RECEIVERS_TOTAL_SHARE_ERROR);
+        require(total == VALID_RECEIVERS_TOTAL_SHARE, INVALID_RECEIVERS_TOTAL_SHARE_ERROR);
         _;
     }
 
