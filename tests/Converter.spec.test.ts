@@ -1,14 +1,5 @@
 import { TokenRoot, TokenWallet } from 'vasku-tip3'
-import {
-  B,
-  createTransferPayload,
-  delay,
-  generateRandomKeyPair,
-  Global,
-  SafeMultisigWallet,
-  x0,
-  ZERO_ADDRESS
-} from 'vasku'
+import { createTransferPayload, Global, ZERO_ADDRESS, B } from 'vasku'
 import TokenWalletPlatformContract from 'vasku-tip3/dist/TokenWalletPlatformContent'
 import { Converter } from '../build'
 import TokenWalletContract from 'vasku-tip3/dist/TokenWalletContent'

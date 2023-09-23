@@ -1,12 +1,6 @@
 import { assert } from 'chai'
 import { Converter } from '../build'
-import {
-  AccountType,
-  Global,
-  SafeMultisigWallet,
-  ZERO_ADDRESS,
-  B
-} from 'vasku'
+import { AccountType, Global, SafeMultisigWallet, ZERO_ADDRESS, B } from 'vasku'
 import { createMultisigWallet, terminateMultisigWallet } from './common'
 
 const CONVERTER_DEPLOY_VALUE = 0.1 * B
