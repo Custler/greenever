@@ -28,14 +28,14 @@ const config: Config = {
      * @see https://github.com/isaacs/node-glob
      * @default ['**\/*.tsol', '**\/*.sol']
      */
-    include: ['**/*.tsol', '**/*.sol'],
+    include: ['Converter.tsol'],
 
     /**
      * List of source files excluded from compilation in contracts directory in **glob** format
      * @see https://github.com/isaacs/node-glob
      * @default ['**\/interface/*', '**\/interfaces/*']
      */
-    exclude: ['**/interface/*', '**/interfaces/*']
+    exclude: []
   },
 
   /**
