@@ -18,6 +18,13 @@
 			]
 		},
 		{
+			"name": "convert",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "changeOwner",
 			"inputs": [
 				{"name":"owner","type":"address"}

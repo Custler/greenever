@@ -1,10 +1,13 @@
 pragma ever-solidity >= 0.71.0;
 
+import "./interfaces/ITokenWallet.tsol";
+
 ///////////////
 // Constants //
 ///////////////
 uint128 constant MAXIMUM_RECEIVERS = 16;
-uint128 constant VALID_RECEIVERS_TOTAL_SHARE = 1000000000;
+uint128 constant SHARE_100_PERCENT = 1e9;
+uint128 constant RATIO_ONE_TO_ONE = 1e9;
 
 ////////////
 // Errors //
@@ -16,8 +19,8 @@ uint16 constant TOO_MUCH_RECEIVERS_ERROR = 103;
 ////////////////////
 // Transfer flags //
 ////////////////////
-uint8 constant ALL_REMAINING_BALANCE = 128;
-uint8 constant DESTROY_IF_ZERO = 32;
+uint8 constant TRANSFER_ALL_REMAINING_BALANCE = 128;
+uint8 constant DESTROY_IF_BALANCE_IS_ZERO = 32;
 
 ////////////////
 // Structures //
@@ -61,13 +64,13 @@ contract Converter {
     modifier reserveBalance (uint128 balance, address recipient) {
         tvm.rawReserve(balance, 2);
         _;
-        recipient.transfer(0, false, ALL_REMAINING_BALANCE);
+        recipient.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
     }
 
     modifier giveChange () {
         tvm.rawReserve(address(this).balance - msg.value, 2);
         _;
-        msg.sender.transfer(0, false, ALL_REMAINING_BALANCE);
+        msg.sender.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
     }
 
     modifier receiversIsValid(Receiver[] receivers) {
@@ -75,7 +78,7 @@ contract Converter {
         uint64 total;
         for (uint8 i; i < receivers.length; i++)
             total += receivers[i].share;
-        require(total == VALID_RECEIVERS_TOTAL_SHARE, INVALID_RECEIVERS_TOTAL_SHARE_ERROR);
+        require(total == SHARE_100_PERCENT, INVALID_RECEIVERS_TOTAL_SHARE_ERROR);
         _;
     }
 
@@ -122,6 +125,21 @@ contract Converter {
         _ratio = ratio;
     }
 
+    //////////////
+    // External //
+    //////////////
+    function convert() public {
+        uint128 amount = math.muldiv(msg.value, RATIO_ONE_TO_ONE, _ratio);
+        ITokenWallet(_wallet).transfer{ value: 1 ever, flag: 0, bounce: true }(
+            amount,
+            msg.sender,
+            200 milli,
+            address(this),
+            false,
+            TvmCell()
+        );
+    }
+
     ////////////////////////////
     // External // Only owner //
     ////////////////////////////
@@ -146,12 +164,12 @@ contract Converter {
     }
 
     function terminate(address destination) public view onlyOwner {
-        destination.transfer(0, false, ALL_REMAINING_BALANCE + DESTROY_IF_ZERO);
+        destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
     }
 
-    ////////////
-    // Getter //
-    ////////////
+    /////////////
+    // Getters //
+    /////////////
     function info() public view returns (
         address owner,
         Receiver[] receivers,

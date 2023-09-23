@@ -1,61 +1,87 @@
 import { TokenRoot, TokenWallet } from 'vasku-tip3'
-import { createTransferPayload, Global, ZERO_ADDRESS, B } from 'vasku'
+import { createTransferPayload, Global, ZERO_ADDRESS, B, Contract } from 'vasku'
 import TokenWalletPlatformContract from 'vasku-tip3/dist/TokenWalletPlatformContent'
 import { Converter } from '../build'
 import TokenWalletContract from 'vasku-tip3/dist/TokenWalletContent'
 import { assert } from 'chai'
-import { createMultisigWallet } from './common'
+import { deploySafeMultisigWallet } from './helpers/multisigWallet'
 
-const TOKEN_ROOT_DEPLOY_VALUE = 2 * B // 1 ton minimum. Hardcoded in contract
-const MANAGER_DEPLOY_VALUE = 0.5 * B
-const MANAGER_CALL_VALUE = 0.2 * B
-const DEPLOY_TOKEN_WALLET_VALUE = 0.1 * B
+const OWNER_DEPLOY_VALUE = B
+const ALISE_DEPLOY_VALUE = 2 * B
+const BOB_DEPLOY_VALUE = 2 * B
+const FUND10_DEPLOY_VALUE = B
+const FUND90_DEPLOY_VALUE = B
+const TOKEN_ROOT_DEPLOY_VALUE = 2 * B // Minimum 1 ever. Hardcoded in TokenRoot contract
+const TOKEN_WALLET_DEPLOY_VALUE = 0.1 * B
+
+const INIT_COINS_VALUE = 0.2 * B
+
+const RANDOM_NONCE = 1
+const TOKEN_NAME = 'Test'
+const TOKEN_SYMBOL = 'TEST'
+const TOKEN_DECIMALS = 9
+const INITIAL_COINS = 100 * B
+
+async function createTokenWallet (root: TokenRoot, contract: Contract): Promise<TokenWallet> {
+  return new TokenWallet({
+    address: (await root.run.walletOf({answerId: 0, walletOwner: await contract.address() })).value0
+  })
+}
 
 describe('Converter spec', function () {
   it('convert', async (): Promise<void> => {
-    const manager = await createMultisigWallet(MANAGER_DEPLOY_VALUE)
+    const owner = await deploySafeMultisigWallet(OWNER_DEPLOY_VALUE)
+    const alise = await deploySafeMultisigWallet(ALISE_DEPLOY_VALUE)
+    const bob = await deploySafeMultisigWallet(BOB_DEPLOY_VALUE)
+    const fund10 = await deploySafeMultisigWallet(FUND10_DEPLOY_VALUE)
+    const fund90 = await deploySafeMultisigWallet(FUND90_DEPLOY_VALUE)
+
     const converter = new Converter()
     const tokenRoot = new TokenRoot({
       initial: {
-        randomNonce_: (Math.random() * Math.pow(2, 16)) | 0,
+        randomNonce_: RANDOM_NONCE,
         deployer_: ZERO_ADDRESS,
-        name_: 'TEST',
-        symbol_: 'TEST',
-        decimals_: 9,
+        name_: TOKEN_NAME,
+        symbol_: TOKEN_SYMBOL,
+        decimals_: TOKEN_DECIMALS,
         walletCode_: TokenWalletContract.code,
-        rootOwner_: await manager.address(),
+        rootOwner_: await owner.address(),
         platformCode_: TokenWalletPlatformContract.code,
       },
     })
     await tokenRoot.deploy(TOKEN_ROOT_DEPLOY_VALUE, {
       initialSupplyTo: ZERO_ADDRESS,
       initialSupply: 0,
-      deployWalletValue: DEPLOY_TOKEN_WALLET_VALUE,
+      deployWalletValue: TOKEN_WALLET_DEPLOY_VALUE,
       mintDisabled: false,
       burnByRootDisabled: false,
       burnPaused: false,
       remainingGasTo: await Global.giver.contract.address()
     })
-    await manager.call.sendTransaction({
+    const converterTokenWallet = await createTokenWallet(tokenRoot, converter)
+    const aliseTokenWallet = await createTokenWallet(tokenRoot, alise)
+    const bobTokenWallet = await createTokenWallet(tokenRoot, bob)
+
+    await owner.call.sendTransaction({
       dest: await tokenRoot.address(),
-      value: MANAGER_CALL_VALUE,
+      value: INIT_COINS_VALUE,
       bounce: true,
       flags: 0,
       payload: await tokenRoot.payload.mint({
-        amount: 100,
+        amount: INITIAL_COINS,
         recipient: await converter.address(),
-        deployWalletValue: DEPLOY_TOKEN_WALLET_VALUE,
-        remainingGasTo: await manager.address(),
+        deployWalletValue: TOKEN_WALLET_DEPLOY_VALUE,
+        remainingGasTo: await owner.address(),
         notify: false,
         payload: await createTransferPayload()
       })
     })
-    const tokenWalletAddress = (await tokenRoot.run.walletOf({ answerId: 0, walletOwner: await converter.address() })).value0
-    const tokenWallet = new TokenWallet({ address: tokenWalletAddress })
-    await tokenWallet.wait()
-    await manager.wait()
+    await converterTokenWallet.wait()
+    await owner.wait()
 
-    // TODO
+    const initialBalance = (await converterTokenWallet.run.balance({ answerId: 0 })).value0
+    assert.equal(INITIAL_COINS.toString(), initialBalance)
+
     assert.isTrue(true)
   })
 })

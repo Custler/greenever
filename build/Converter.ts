@@ -86,6 +86,9 @@ export class Converter extends Contract {
 }
 class ConverterCalls {
   constructor (private readonly contract: Contract) {}
+  async convert (keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('convert', {}, keys)
+  }
   async changeOwner (input: changeOwnerIn, keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('changeOwner', input, keys)
   }
@@ -116,6 +119,9 @@ class ConverterRuns {
 }
 class ConverterPayload {
   constructor (private readonly contract: Contract) {}
+  async convert (): Promise<string> {
+    return await this.contract.createPayload('convert')
+  }
   async changeOwner (input: changeOwnerIn): Promise<string> {
     return await this.contract.createPayload('changeOwner', input)
   }

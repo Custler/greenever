@@ -1,71 +1,41 @@
 import { assert } from 'chai'
+import {
+  AccountType,
+  SafeMultisigWallet,
+  B
+} from 'vasku'
+import {
+  deployConverter,
+  getDefaultInput,
+  terminateConverter
+} from './helpers/converter'
+import {
+  deploySafeMultisigWallet,
+  terminateSafeMultisigWallet
+} from './helpers/multisigWallet'
 import { Converter } from '../build'
-import { AccountType, Global, SafeMultisigWallet, ZERO_ADDRESS, B } from 'vasku'
-import { createMultisigWallet, terminateMultisigWallet } from './common'
+import { createRandomAddress } from './helpers/utils'
 
-const CONVERTER_DEPLOY_VALUE = 0.1 * B
-const CONVERTER_BALANCE_VALUE = 0.01 * B
-const OWNER_CALL_VALUE = 0.2 * B
+const OWNER_DEPLOY_VALUE = B
+const CONVERTER_DEPLOY_VALUE = B
+const CONVERTER_BALANCE = 0.1 * B
+const OWNER_CALL_VALUE = 0.5 * B
 
-type ConstructorInput = {
-  owner: string
-  receivers: Array<{
-    wallet: string
-    share: string | number | bigint
-  }>
-  wallet: string
-  ratio: string | number | bigint
-  minDeposit: string | number | bigint
-  balance: string | number | bigint
-  recipient: string
+async function createOwner (): Promise<SafeMultisigWallet> {
+  return await deploySafeMultisigWallet(OWNER_DEPLOY_VALUE)
 }
 
-async function getConverterConstructorInput (override: any = {}): Promise<ConstructorInput> {
-  return {
-    owner: ZERO_ADDRESS,
-    receivers: [
-      {
-        wallet: ZERO_ADDRESS,
-        share: B
-      }
-    ],
-    wallet: ZERO_ADDRESS,
-    minDeposit: B,
-    ratio: B,
-    balance: CONVERTER_BALANCE_VALUE,
-    recipient: await Global.giver.contract.address(),
-    ...override
-  }
-}
-
-async function createConverter (
-  constructorInput: any = undefined,
-  deployValue: number = CONVERTER_DEPLOY_VALUE
-): Promise<Converter> {
-  const converter = new Converter()
-  const input = await getConverterConstructorInput()
-  await converter.deploy(deployValue,constructorInput === undefined ? input : { ...input, ...constructorInput })
-  return converter
-}
-
-async function terminateConverter (owner: SafeMultisigWallet, converter: Converter): Promise<void> {
-  await owner.call.sendTransaction({
-    dest: await converter.address(),
-    value: OWNER_CALL_VALUE,
-    bounce: true,
-    flags: 0,
-    payload: await converter.payload.terminate({ destination: await Global.giver.contract.address() })
-  })
-}
-
-async function createRandomAddress (): Promise<string> {
-  return await (new SafeMultisigWallet()).address()
+async function createConverter (input: any = {}): Promise<Converter> {
+  return await deployConverter(CONVERTER_DEPLOY_VALUE, CONVERTER_BALANCE, input)
 }
 
 describe('Converter owner', function () {
   it('deploy and get info', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
-    const input = await getConverterConstructorInput({ owner: await owner.address() })
+    const owner = await createOwner()
+    const input = {
+      ...await getDefaultInput(CONVERTER_BALANCE),
+      ...{ owner: await owner.address() }
+    }
     const converter = await createConverter(input)
 
     const accountType = await converter.accountType()
@@ -79,20 +49,22 @@ describe('Converter owner', function () {
     assert.equal(info.ratio, input.ratio.toString())
 
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
   })
 
   it('terminate', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
+    const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
+
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
+
     const accountType = await converter.accountType()
     assert.equal(accountType, AccountType.nonExist)
   })
 
   it('change owner', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
+    const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
     const newOwnerAddress = await createRandomAddress()
@@ -109,11 +81,11 @@ describe('Converter owner', function () {
     assert.equal(info.owner, newOwnerAddress)
 
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
   })
 
   it('change ratio', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
+    const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
     const newRatio = 2_000_000_000
@@ -130,11 +102,12 @@ describe('Converter owner', function () {
     assert.equal(info.ratio, newRatio.toString())
 
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
   })
 
+
   it('change receivers', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
+    const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
     const newReceivers = [
@@ -160,8 +133,9 @@ describe('Converter owner', function () {
     assert.equal(info.receivers.toString(), newReceivers.toString())
 
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
   })
+
 
   it('invalid receivers share: error 102', async (): Promise<void> => {
     try {
@@ -178,7 +152,7 @@ describe('Converter owner', function () {
   })
 
   it('change wallet', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
+    const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
     const newWallet = await createRandomAddress()
@@ -195,11 +169,11 @@ describe('Converter owner', function () {
     assert.equal(info.wallet, newWallet.toString())
 
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
   })
 
   it('change minDeposit', async (): Promise<void> => {
-    const owner = await createMultisigWallet()
+    const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
     const minDeposit = 2 * B
@@ -217,6 +191,6 @@ describe('Converter owner', function () {
     assert.equal(info.minDeposit, minDeposit.toString())
 
     await terminateConverter(owner, converter)
-    await terminateMultisigWallet(owner)
+    await terminateSafeMultisigWallet(owner)
   })
 })
