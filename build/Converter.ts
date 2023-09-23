@@ -31,6 +31,9 @@ type changeWalletIn = {
 type changeMinDepositIn = {
   minDeposit: string | number | bigint
 }
+type terminateIn = {
+  destination: string
+}
 type infoOut = {
   owner: string
   receivers: Array<{
@@ -98,6 +101,9 @@ class ConverterCalls {
   async changeMinDeposit (input: changeMinDepositIn, keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('changeMinDeposit', input, keys)
   }
+  async terminate (input: terminateIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('terminate', input, keys)
+  }
   async info (keys?: KeyPair): Promise<ResultOfCall & { out: infoOut }> {
     return await this.contract.callMethod('info', {}, keys)
   }
@@ -124,6 +130,9 @@ class ConverterPayload {
   }
   async changeMinDeposit (input: changeMinDepositIn): Promise<string> {
     return await this.contract.createPayload('changeMinDeposit', input)
+  }
+  async terminate (input: terminateIn): Promise<string> {
+    return await this.contract.createPayload('terminate', input)
   }
   async info (): Promise<string> {
     return await this.contract.createPayload('info')

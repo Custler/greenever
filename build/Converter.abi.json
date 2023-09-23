@@ -58,6 +58,14 @@
 			]
 		},
 		{
+			"name": "terminate",
+			"inputs": [
+				{"name":"destination","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "info",
 			"inputs": [
 			],
