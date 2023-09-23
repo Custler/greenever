@@ -28,14 +28,18 @@ type changeReceiversIn = {
 type changeWalletIn = {
   wallet: string
 }
+type changeMinDepositIn = {
+  minDeposit: string | number | bigint
+}
 type infoOut = {
   owner: string
-  ratio: string
   receivers: Array<{
     wallet: string
     share: string
   }>
   wallet: string
+  minDeposit: string
+  ratio: string
 }
 
 export class Converter extends Contract {
@@ -91,6 +95,9 @@ class ConverterCalls {
   async changeWallet (input: changeWalletIn, keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('changeWallet', input, keys)
   }
+  async changeMinDeposit (input: changeMinDepositIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('changeMinDeposit', input, keys)
+  }
   async info (keys?: KeyPair): Promise<ResultOfCall & { out: infoOut }> {
     return await this.contract.callMethod('info', {}, keys)
   }
@@ -114,6 +121,9 @@ class ConverterPayload {
   }
   async changeWallet (input: changeWalletIn): Promise<string> {
     return await this.contract.createPayload('changeWallet', input)
+  }
+  async changeMinDeposit (input: changeMinDepositIn): Promise<string> {
+    return await this.contract.createPayload('changeMinDeposit', input)
   }
   async info (): Promise<string> {
     return await this.contract.createPayload('info')

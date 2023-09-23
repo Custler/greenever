@@ -79,6 +79,15 @@ contract Converter {
     address private _owner;
     Receiver[] private _receivers;
     address private _wallet;
+
+    /**
+     * Minimum customer deposit in COINs
+     *
+     * Money for TOKENs transfer and sending COINs to recipients is taken from money that the customer sends
+     * If you allow the user to send any value, then he can send small amount of money
+     * A small amount of money may not be enough for TOKENs transfer and sending COINs to recipients
+     * This is why the min Deposit variable is used
+     */
     uint128 private _minDeposit;
 
     /**
@@ -126,10 +135,26 @@ contract Converter {
         _wallet = wallet;
     }
 
+    function changeMinDeposit(uint128 minDeposit) public onlyOwner giveChange {
+        _minDeposit = minDeposit;
+    }
+
     ////////////
     // Getter //
     ////////////
-    function info() public view returns (address owner, uint128 ratio, Receiver[] receivers, address wallet) {
-        return (_owner, _ratio, _receivers, _wallet);
+    function info() public view returns (
+        address owner,
+        Receiver[] receivers,
+        address wallet,
+        uint128 minDeposit,
+        uint128 ratio
+    ) {
+        return (
+            _owner,
+            _receivers,
+            _wallet,
+            _minDeposit,
+            _ratio
+        );
     }
 }

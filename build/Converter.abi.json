@@ -50,14 +50,23 @@
 			]
 		},
 		{
+			"name": "changeMinDeposit",
+			"inputs": [
+				{"name":"minDeposit","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "info",
 			"inputs": [
 			],
 			"outputs": [
 				{"name":"owner","type":"address"},
-				{"name":"ratio","type":"uint128"},
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
-				{"name":"wallet","type":"address"}
+				{"name":"wallet","type":"address"},
+				{"name":"minDeposit","type":"uint128"},
+				{"name":"ratio","type":"uint128"}
 			]
 		}
 	],

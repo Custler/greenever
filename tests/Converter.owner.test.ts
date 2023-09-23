@@ -59,8 +59,10 @@ describe('Converter owner', function () {
     const info = await converter.run.info()
     assert.equal(accountType, AccountType.active)
     assert.equal(info.owner, input.owner)
-    assert.equal(info.ratio, input.ratio.toString())
     assert.equal(info.receivers.toString(), input.receivers.toString())
+    assert.equal(info.wallet, input.wallet.toString())
+    assert.equal(info.minDeposit, input.minDeposit.toString())
+    assert.equal(info.ratio, input.ratio.toString())
   })
 
   it('change owner', async (): Promise<void> => {
@@ -164,5 +166,25 @@ describe('Converter owner', function () {
 
     const info = await converter.run.info()
     assert.equal(info.wallet, newWallet.toString())
+  })
+
+  it('change minDeposit', async (): Promise<void> => {
+    const owner = await createMultisigWallet()
+    const converter = await createConverter({ owner: await owner.address() })
+
+    const minDeposit = 2 * B
+    await owner.call.sendTransaction({
+      dest: await converter.address(),
+      value: OWNER_CALL_VALUE,
+      bounce: true,
+      flags: 0,
+      payload: await converter.payload.changeMinDeposit({ minDeposit: minDeposit })
+    })
+    await converter.wait()
+    await owner.wait()
+    await terminateMultisigWallet(owner)
+
+    const info = await converter.run.info()
+    assert.equal(info.minDeposit, minDeposit.toString())
   })
 })
