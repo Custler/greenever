@@ -129,8 +129,15 @@ contract Converter {
     // External //
     //////////////
     function convert() public view {
+        uint128 availableShare = address(this).balance - 1 ever - 0.1 ever;
+        for (uint8 i = 0; i < _receivers.length; i++) {
+            Receiver receiver = _receivers[i];
+            uint128 value = math.muldiv(availableShare, receiver.share, SHARE_100_PERCENT);
+            receiver.wallet.transfer(value, false, 1);
+        }
+
         uint128 amount = math.muldiv(msg.value, RATIO_ONE_TO_ONE, _ratio);
-        ITokenWallet(_wallet).transfer{ value: 1 ever, flag: 0, bounce: true }(
+        ITokenWallet(_wallet).transfer{ value: 400 milli, flag: 0, bounce: true }(
             amount,
             msg.sender,
             200 milli,
