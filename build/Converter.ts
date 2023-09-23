@@ -3,14 +3,15 @@ import { type KeyPair, type ResultOfProcessMessage } from '@eversdk/core'
 import ConverterContent from './ConverterContent'
 type constructorIn = {
   owner: string
-  ratio: string | number | bigint
   receivers: Array<{
     wallet: string
     share: string | number | bigint
   }>
+  wallet: string
+  minDeposit: string | number | bigint
+  ratio: string | number | bigint
   balance: string | number | bigint
   recipient: string
-  wallet: string
 }
 type changeOwnerIn = {
   owner: string

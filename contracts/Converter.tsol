@@ -18,6 +18,7 @@ uint16 constant TOO_MUCH_RECEIVERS_ERROR = 103;
 ////////////////
 struct Receiver {
     address wallet;
+
     /**
      * 1_000_000_000 means 100% of received COINs will be sent to the wallet
      *   500_000_000 means 50%  of received COINs will be sent to the wallet
@@ -76,30 +77,34 @@ contract Converter {
     // Variables //
     ///////////////
     address private _owner;
+    Receiver[] private _receivers;
+    address private _wallet;
+    uint128 private _minDeposit;
+
     /**
      * 2_000_000_000 means 2   COINS for 1 TOKEN
      * 1_000_000_000 means 1   COINS for 1 TOKEN
      *   500_000_000 means 0.5 COINS for 1 TOKEN
      */
     uint128 private _ratio;
-    Receiver[] private _receivers;
-    address private _wallet;
 
     /////////////////
     // Constructor //
     /////////////////
     constructor(
         address owner,
-        uint128 ratio,
         Receiver[] receivers,
+        address wallet,
+        uint128 minDeposit,
+        uint128 ratio,
         uint128 balance,
-        address recipient,
-        address wallet
+        address recipient
     ) accept reserveBalance(balance, recipient) receiversIsValid(receivers) {
         _owner = owner;
-        _ratio = ratio;
         _receivers = receivers;
         _wallet = wallet;
+        _minDeposit = minDeposit;
+        _ratio = ratio;
     }
 
     ////////////////////////////

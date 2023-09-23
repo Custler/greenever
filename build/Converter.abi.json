@@ -7,11 +7,12 @@
 			"name": "constructor",
 			"inputs": [
 				{"name":"owner","type":"address"},
-				{"name":"ratio","type":"uint128"},
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
+				{"name":"wallet","type":"address"},
+				{"name":"minDeposit","type":"uint128"},
+				{"name":"ratio","type":"uint128"},
 				{"name":"balance","type":"uint128"},
-				{"name":"recipient","type":"address"},
-				{"name":"wallet","type":"address"}
+				{"name":"recipient","type":"address"}
 			],
 			"outputs": [
 			]
@@ -69,8 +70,9 @@
 		{"name":"_timestamp","type":"uint64"},
 		{"name":"_constructorFlag","type":"bool"},
 		{"name":"_owner","type":"address"},
-		{"name":"_ratio","type":"uint128"},
 		{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"_receivers","type":"tuple[]"},
-		{"name":"_wallet","type":"address"}
+		{"name":"_wallet","type":"address"},
+		{"name":"_minDeposit","type":"uint128"},
+		{"name":"_ratio","type":"uint128"}
 	]
 }

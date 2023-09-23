@@ -9,29 +9,31 @@ const OWNER_CALL_VALUE = 0.1 * B
 
 type ConstructorInput = {
   owner: string
-  ratio: string | number | bigint
   receivers: Array<{
     wallet: string
     share: string | number | bigint
   }>
+  wallet: string
+  ratio: string | number | bigint
+  minDeposit: string | number | bigint
   balance: string | number | bigint
   recipient: string
-  wallet: string
 }
 
 async function getConverterConstructorInput (): Promise<ConstructorInput> {
   return {
     owner: ZERO_ADDRESS,
-    ratio: 1e9,
     receivers: [
       {
         wallet: ZERO_ADDRESS,
-        share: 1e9
+        share: B
       }
     ],
+    wallet: ZERO_ADDRESS,
+    minDeposit: B,
+    ratio: B,
     balance: CONVERTER_BALANCE_VALUE,
     recipient: await Global.giver.contract.address(),
-    wallet: ZERO_ADDRESS
   }
 }
 
