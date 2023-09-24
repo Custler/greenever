@@ -164,35 +164,35 @@ contract Converter {
     ////////////////////////////
     // External // Only owner //
     ////////////////////////////
-    function changeOwner(address owner) public onlyOwner giveChange {
+    function setOwner(address owner) public onlyOwner giveChange {
         _owner = owner;
     }
 
-    function changeRatio(uint128 ratio) public onlyOwner giveChange {
+    function setRatio(uint128 ratio) public onlyOwner giveChange {
         _ratio = ratio;
     }
 
-    function changeReceivers(Receiver[] receivers) public onlyOwner giveChange receiversIsValid(receivers) {
+    function setReceivers(Receiver[] receivers) public onlyOwner giveChange receiversIsValid(receivers) {
         _receivers = receivers;
     }
 
-    function changeWallet(address wallet) public onlyOwner giveChange {
+    function setWallet(address wallet) public onlyOwner giveChange {
         _wallet = wallet;
     }
 
-    function changeMinDeposit(uint128 minDeposit) public onlyOwner giveChange {
+    function setMinDeposit(uint128 minDeposit) public onlyOwner giveChange {
         _minDeposit = minDeposit;
     }
 
-    function changeTransferGas(uint128 coinsTransferGas) public onlyOwner giveChange {
+    function setTransferGas(uint128 coinsTransferGas) public onlyOwner giveChange {
         _coinsTransferGas = coinsTransferGas;
     }
 
-    function changeTokensTransferGas(uint128 tokensTransferGas) public onlyOwner giveChange {
+    function setTokensTransferGas(uint128 tokensTransferGas) public onlyOwner giveChange {
         _tokensTransferGas = tokensTransferGas;
     }
 
-    function changeTokenWalletDeployGas(uint128 tokenWalletDeployGas) public onlyOwner giveChange {
+    function setTokenWalletDeployGas(uint128 tokenWalletDeployGas) public onlyOwner giveChange {
         _tokenWalletDeployGas = tokenWalletDeployGas;
     }
 

@@ -16,31 +16,31 @@ type constructorIn = {
   balance: string | number | bigint
   recipient: string
 }
-type changeOwnerIn = {
+type setOwnerIn = {
   owner: string
 }
-type changeRatioIn = {
+type setRatioIn = {
   ratio: string | number | bigint
 }
-type changeReceiversIn = {
+type setReceiversIn = {
   receivers: Array<{
     wallet: string
     share: string | number | bigint
   }>
 }
-type changeWalletIn = {
+type setWalletIn = {
   wallet: string
 }
-type changeMinDepositIn = {
+type setMinDepositIn = {
   minDeposit: string | number | bigint
 }
-type changeTransferGasIn = {
+type setTransferGasIn = {
   coinsTransferGas: string | number | bigint
 }
-type changeTokensTransferGasIn = {
+type setTokensTransferGasIn = {
   tokensTransferGas: string | number | bigint
 }
-type changeTokenWalletDeployGasIn = {
+type setTokenWalletDeployGasIn = {
   tokenWalletDeployGas: string | number | bigint
 }
 type terminateIn = {
@@ -104,29 +104,29 @@ class ConverterCalls {
   async convert (keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('convert', {}, keys)
   }
-  async changeOwner (input: changeOwnerIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeOwner', input, keys)
+  async setOwner (input: setOwnerIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setOwner', input, keys)
   }
-  async changeRatio (input: changeRatioIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeRatio', input, keys)
+  async setRatio (input: setRatioIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setRatio', input, keys)
   }
-  async changeReceivers (input: changeReceiversIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeReceivers', input, keys)
+  async setReceivers (input: setReceiversIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setReceivers', input, keys)
   }
-  async changeWallet (input: changeWalletIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeWallet', input, keys)
+  async setWallet (input: setWalletIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setWallet', input, keys)
   }
-  async changeMinDeposit (input: changeMinDepositIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeMinDeposit', input, keys)
+  async setMinDeposit (input: setMinDepositIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setMinDeposit', input, keys)
   }
-  async changeTransferGas (input: changeTransferGasIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeTransferGas', input, keys)
+  async setTransferGas (input: setTransferGasIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setTransferGas', input, keys)
   }
-  async changeTokensTransferGas (input: changeTokensTransferGasIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeTokensTransferGas', input, keys)
+  async setTokensTransferGas (input: setTokensTransferGasIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setTokensTransferGas', input, keys)
   }
-  async changeTokenWalletDeployGas (input: changeTokenWalletDeployGasIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('changeTokenWalletDeployGas', input, keys)
+  async setTokenWalletDeployGas (input: setTokenWalletDeployGasIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('setTokenWalletDeployGas', input, keys)
   }
   async terminate (input: terminateIn, keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('terminate', input, keys)
@@ -146,29 +146,29 @@ class ConverterPayload {
   async convert (): Promise<string> {
     return await this.contract.createPayload('convert')
   }
-  async changeOwner (input: changeOwnerIn): Promise<string> {
-    return await this.contract.createPayload('changeOwner', input)
+  async setOwner (input: setOwnerIn): Promise<string> {
+    return await this.contract.createPayload('setOwner', input)
   }
-  async changeRatio (input: changeRatioIn): Promise<string> {
-    return await this.contract.createPayload('changeRatio', input)
+  async setRatio (input: setRatioIn): Promise<string> {
+    return await this.contract.createPayload('setRatio', input)
   }
-  async changeReceivers (input: changeReceiversIn): Promise<string> {
-    return await this.contract.createPayload('changeReceivers', input)
+  async setReceivers (input: setReceiversIn): Promise<string> {
+    return await this.contract.createPayload('setReceivers', input)
   }
-  async changeWallet (input: changeWalletIn): Promise<string> {
-    return await this.contract.createPayload('changeWallet', input)
+  async setWallet (input: setWalletIn): Promise<string> {
+    return await this.contract.createPayload('setWallet', input)
   }
-  async changeMinDeposit (input: changeMinDepositIn): Promise<string> {
-    return await this.contract.createPayload('changeMinDeposit', input)
+  async setMinDeposit (input: setMinDepositIn): Promise<string> {
+    return await this.contract.createPayload('setMinDeposit', input)
   }
-  async changeTransferGas (input: changeTransferGasIn): Promise<string> {
-    return await this.contract.createPayload('changeTransferGas', input)
+  async setTransferGas (input: setTransferGasIn): Promise<string> {
+    return await this.contract.createPayload('setTransferGas', input)
   }
-  async changeTokensTransferGas (input: changeTokensTransferGasIn): Promise<string> {
-    return await this.contract.createPayload('changeTokensTransferGas', input)
+  async setTokensTransferGas (input: setTokensTransferGasIn): Promise<string> {
+    return await this.contract.createPayload('setTokensTransferGas', input)
   }
-  async changeTokenWalletDeployGas (input: changeTokenWalletDeployGasIn): Promise<string> {
-    return await this.contract.createPayload('changeTokenWalletDeployGas', input)
+  async setTokenWalletDeployGas (input: setTokenWalletDeployGasIn): Promise<string> {
+    return await this.contract.createPayload('setTokenWalletDeployGas', input)
   }
   async terminate (input: terminateIn): Promise<string> {
     return await this.contract.createPayload('terminate', input)

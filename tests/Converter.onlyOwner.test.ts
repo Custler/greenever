@@ -52,6 +52,20 @@ describe('Converter owner', function () {
     await terminateSafeMultisigWallet(owner)
   })
 
+  it('invalid receivers share: error 102', async (): Promise<void> => {
+    try {
+      await createConverter({ receivers: [
+          {
+            wallet: await createRandomAddress(),
+            share: 500_000_000
+          }
+        ]})
+    }
+    catch (error: any) {
+      assert.equal(error.data.exit_code, 102)
+    }
+  })
+
   it('terminate', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
@@ -63,7 +77,7 @@ describe('Converter owner', function () {
     assert.equal(accountType, AccountType.nonExist)
   })
 
-  it('change owner', async (): Promise<void> => {
+  it('set owner', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
@@ -73,7 +87,7 @@ describe('Converter owner', function () {
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.changeOwner({ owner: newOwnerAddress })
+      payload: await converter.payload.setOwner({ owner: newOwnerAddress })
     })
     await converter.wait()
     await owner.wait()
@@ -84,7 +98,7 @@ describe('Converter owner', function () {
     await terminateSafeMultisigWallet(owner)
   })
 
-  it('change ratio', async (): Promise<void> => {
+  it('set ratio', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
@@ -94,7 +108,7 @@ describe('Converter owner', function () {
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.changeRatio({ ratio: newRatio })
+      payload: await converter.payload.setRatio({ ratio: newRatio })
     })
     await converter.wait()
     await owner.wait()
@@ -106,7 +120,7 @@ describe('Converter owner', function () {
   })
 
 
-  it('change receivers', async (): Promise<void> => {
+  it('set receivers', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
@@ -125,7 +139,7 @@ describe('Converter owner', function () {
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.changeReceivers({ receivers: newReceivers })
+      payload: await converter.payload.setReceivers({ receivers: newReceivers })
     })
     await converter.wait()
     await owner.wait()
@@ -136,22 +150,7 @@ describe('Converter owner', function () {
     await terminateSafeMultisigWallet(owner)
   })
 
-
-  it('invalid receivers share: error 102', async (): Promise<void> => {
-    try {
-      await createConverter({ receivers: [
-        {
-          wallet: await createRandomAddress(),
-          share: 500_000_000
-        }
-      ]})
-    }
-    catch (error: any) {
-      assert.equal(error.data.exit_code, 102)
-    }
-  })
-
-  it('change wallet', async (): Promise<void> => {
+  it('set wallet', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
@@ -161,7 +160,7 @@ describe('Converter owner', function () {
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.changeWallet({ wallet: newWallet })
+      payload: await converter.payload.setWallet({ wallet: newWallet })
     })
     await converter.wait()
     await owner.wait()
@@ -172,7 +171,7 @@ describe('Converter owner', function () {
     await terminateSafeMultisigWallet(owner)
   })
 
-  it('change minDeposit', async (): Promise<void> => {
+  it('set minDeposit', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
@@ -182,7 +181,7 @@ describe('Converter owner', function () {
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.changeMinDeposit({ minDeposit: minDeposit })
+      payload: await converter.payload.setMinDeposit({ minDeposit: minDeposit })
     })
     await converter.wait()
     await owner.wait()

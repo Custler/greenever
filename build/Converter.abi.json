@@ -28,7 +28,7 @@
 			]
 		},
 		{
-			"name": "changeOwner",
+			"name": "setOwner",
 			"inputs": [
 				{"name":"owner","type":"address"}
 			],
@@ -36,7 +36,7 @@
 			]
 		},
 		{
-			"name": "changeRatio",
+			"name": "setRatio",
 			"inputs": [
 				{"name":"ratio","type":"uint128"}
 			],
@@ -44,7 +44,7 @@
 			]
 		},
 		{
-			"name": "changeReceivers",
+			"name": "setReceivers",
 			"inputs": [
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"}
 			],
@@ -52,7 +52,7 @@
 			]
 		},
 		{
-			"name": "changeWallet",
+			"name": "setWallet",
 			"inputs": [
 				{"name":"wallet","type":"address"}
 			],
@@ -60,7 +60,7 @@
 			]
 		},
 		{
-			"name": "changeMinDeposit",
+			"name": "setMinDeposit",
 			"inputs": [
 				{"name":"minDeposit","type":"uint128"}
 			],
@@ -68,7 +68,7 @@
 			]
 		},
 		{
-			"name": "changeTransferGas",
+			"name": "setTransferGas",
 			"inputs": [
 				{"name":"coinsTransferGas","type":"uint128"}
 			],
@@ -76,7 +76,7 @@
 			]
 		},
 		{
-			"name": "changeTokensTransferGas",
+			"name": "setTokensTransferGas",
 			"inputs": [
 				{"name":"tokensTransferGas","type":"uint128"}
 			],
@@ -84,7 +84,7 @@
 			]
 		},
 		{
-			"name": "changeTokenWalletDeployGas",
+			"name": "setTokenWalletDeployGas",
 			"inputs": [
 				{"name":"tokenWalletDeployGas","type":"uint128"}
 			],
