@@ -28,6 +28,32 @@
 			]
 		},
 		{
+			"name": "terminate",
+			"inputs": [
+				{"name":"destination","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdrawTokens",
+			"inputs": [
+				{"name":"destination","type":"address"},
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "drain",
+			"inputs": [
+				{"name":"destination","type":"address"},
+				{"name":"remainBalance","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setOwner",
 			"inputs": [
 				{"name":"owner","type":"address"}
@@ -87,14 +113,6 @@
 			"name": "setTokenWalletDeployGas",
 			"inputs": [
 				{"name":"tokenWalletDeployGas","type":"uint128"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "terminate",
-			"inputs": [
-				{"name":"destination","type":"address"}
 			],
 			"outputs": [
 			]

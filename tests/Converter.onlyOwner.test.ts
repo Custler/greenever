@@ -77,6 +77,28 @@ describe('Converter owner', function () {
     assert.equal(accountType, AccountType.nonExist)
   })
 
+  it('drain', async (): Promise<void> => {
+    const owner = await createOwner()
+    const converter = await createConverter({ owner: await owner.address() })
+
+    const destination = new SafeMultisigWallet()
+    const remainBalance = 0.01 * B
+    await owner.call.sendTransaction({
+      dest: await converter.address(),
+      value: OWNER_CALL_VALUE,
+      bounce: true,
+      flags: 0,
+      payload: await converter.payload.drain({
+        destination: (await destination.address()).toString(),
+        remainBalance
+      })
+    })
+    await destination.wait()
+
+    const destinationBalance = await destination.balance()
+    assert.isTrue(destinationBalance > 0)
+  })
+
   it('setOwner', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
@@ -126,11 +148,11 @@ describe('Converter owner', function () {
 
     const receivers = [
       {
-        wallet: (await (new SafeMultisigWallet()).address()).toString(),
+        wallet: await createRandomAddress(),
         share: 900_000_000
       },
       {
-        wallet: (await (new SafeMultisigWallet()).address()).toString(),
+        wallet: await createRandomAddress(),
         share: 100_000_000
       }
     ]

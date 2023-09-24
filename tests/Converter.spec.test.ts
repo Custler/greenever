@@ -147,8 +147,13 @@ describe('Converter spec', function () {
     await receiver90.wait()
     await bobTokenWallet.wait()
     const bobTokenWalletBalance = (await bobTokenWallet.run.balance({ answerId: 0 })).value0
-    assert.equal(BOB_TOKENS.toString(), bobTokenWalletBalance)
+    assert.equal(bobTokenWalletBalance, BOB_TOKENS.toString())
 
-    // TODO check funds
+    const receiver10Balance = parseFloat((await receiver10.balance()).toString())
+    const receiver90Balance = parseFloat((await receiver90.balance()).toString())
+    const onChainCoefficient = receiver90Balance / receiver10Balance
+    const offChainCoefficient = RECEIVER90_SHARE_VALUE / RECEIVER10_SHARE_VALUE
+    const coefficientDifference = Math.abs(offChainCoefficient - onChainCoefficient)
+    assert.isTrue(coefficientDifference < 0.001)
   })
 })

@@ -16,6 +16,17 @@ type constructorIn = {
   balance: string | number | bigint
   recipient: string
 }
+type terminateIn = {
+  destination: string
+}
+type withdrawTokensIn = {
+  destination: string
+  amount: string | number | bigint
+}
+type drainIn = {
+  destination: string
+  remainBalance: string | number | bigint
+}
 type setOwnerIn = {
   owner: string
 }
@@ -42,9 +53,6 @@ type setTokensTransferGasIn = {
 }
 type setTokenWalletDeployGasIn = {
   tokenWalletDeployGas: string | number | bigint
-}
-type terminateIn = {
-  destination: string
 }
 type infoOut = {
   owner: string
@@ -104,6 +112,15 @@ class ConverterCalls {
   async convert (keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('convert', {}, keys)
   }
+  async terminate (input: terminateIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('terminate', input, keys)
+  }
+  async withdrawTokens (input: withdrawTokensIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('withdrawTokens', input, keys)
+  }
+  async drain (input: drainIn, keys?: KeyPair): Promise<ResultOfCall> {
+    return await this.contract.callMethod('drain', input, keys)
+  }
   async setOwner (input: setOwnerIn, keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('setOwner', input, keys)
   }
@@ -128,9 +145,6 @@ class ConverterCalls {
   async setTokenWalletDeployGas (input: setTokenWalletDeployGasIn, keys?: KeyPair): Promise<ResultOfCall> {
     return await this.contract.callMethod('setTokenWalletDeployGas', input, keys)
   }
-  async terminate (input: terminateIn, keys?: KeyPair): Promise<ResultOfCall> {
-    return await this.contract.callMethod('terminate', input, keys)
-  }
   async info (keys?: KeyPair): Promise<ResultOfCall & { out: infoOut }> {
     return await this.contract.callMethod('info', {}, keys)
   }
@@ -145,6 +159,15 @@ class ConverterPayload {
   constructor (private readonly contract: Contract) {}
   async convert (): Promise<string> {
     return await this.contract.createPayload('convert')
+  }
+  async terminate (input: terminateIn): Promise<string> {
+    return await this.contract.createPayload('terminate', input)
+  }
+  async withdrawTokens (input: withdrawTokensIn): Promise<string> {
+    return await this.contract.createPayload('withdrawTokens', input)
+  }
+  async drain (input: drainIn): Promise<string> {
+    return await this.contract.createPayload('drain', input)
   }
   async setOwner (input: setOwnerIn): Promise<string> {
     return await this.contract.createPayload('setOwner', input)
@@ -169,9 +192,6 @@ class ConverterPayload {
   }
   async setTokenWalletDeployGas (input: setTokenWalletDeployGasIn): Promise<string> {
     return await this.contract.createPayload('setTokenWalletDeployGas', input)
-  }
-  async terminate (input: terminateIn): Promise<string> {
-    return await this.contract.createPayload('terminate', input)
   }
   async info (): Promise<string> {
     return await this.contract.createPayload('info')

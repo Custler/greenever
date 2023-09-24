@@ -151,19 +151,27 @@ contract Converter {
         }
 
         uint128 amount = math.muldiv(msg.value, RATIO_ONE_TO_ONE, _ratio);
-        ITokenWallet(_wallet).transfer{ value: tokenTransferValue, flag: 0, bounce: true }(
-            amount,
-            msg.sender,
-            tokenWalletDeployValue,
-            address(this),
-            false,
-            TvmCell()
-        );
+        _withdrawToken(msg.sender, amount, tokenTransferValue, tokenWalletDeployValue);
     }
 
     ////////////////////////////
     // External // Only owner //
     ////////////////////////////
+    function terminate(address destination) public view onlyOwner {
+        destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
+    }
+
+    function withdrawTokens(address destination, uint128 amount) public view onlyOwner giveChange {
+        uint128 tokenTransferValue = gasToValue(_tokensTransferGas);
+        uint128 tokenWalletDeployValue = gasToValue(_tokenWalletDeployGas);
+        _withdrawToken(destination, amount, tokenTransferValue, tokenWalletDeployValue);
+    }
+
+    function drain(address destination, uint128 remainBalance) public view onlyOwner {
+        tvm.rawReserve(remainBalance, 2);
+        destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
+    }
+
     function setOwner(address owner) public onlyOwner giveChange {
         _owner = owner;
     }
@@ -196,10 +204,6 @@ contract Converter {
         _tokenWalletDeployGas = tokenWalletDeployGas;
     }
 
-    function terminate(address destination) public view onlyOwner {
-        destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
-    }
-
     /////////////
     // Getters //
     /////////////
@@ -222,6 +226,23 @@ contract Converter {
             _tokensTransferGas,
             _tokenWalletDeployGas,
             _ratio
+        );
+    }
+
+
+    function _withdrawToken(
+        address destination,
+        uint128 amount,
+        uint128 tokenTransferValue,
+        uint128 tokenWalletDeployValue
+    ) private view {
+        ITokenWallet(_wallet).transfer{ value: tokenTransferValue, flag: 0, bounce: true }(
+            amount,
+            destination,
+            tokenWalletDeployValue,
+            msg.sender,
+            false,
+            TvmCell()
         );
     }
 }
