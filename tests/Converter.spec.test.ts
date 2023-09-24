@@ -1,5 +1,5 @@
 import { TokenRoot, TokenWallet } from 'vasku-tip3'
-import { createTransferPayload, Global, Contract, ZERO_ADDRESS, B, M, SafeMultisigWallet } from 'vasku'
+import { createTransferPayload, Global, Contract, ZERO_ADDRESS, B, SafeMultisigWallet, K } from 'vasku'
 import TokenWalletPlatformContract from 'vasku-tip3/dist/TokenWalletPlatformContent'
 import { Converter } from '../build'
 import TokenWalletContract from 'vasku-tip3/dist/TokenWalletContent'
@@ -21,9 +21,12 @@ const TOKEN_WALLET_DEPLOY_VALUE = 0.1 * B
 
 // Deploy Converter
 const CONVERTER_DEPLOY_VALUE = B
-const FUND10_SHARE_VALUE = 0.1 * B
-const FUND90_SHARE_VALUE = 0.9 * B
+const RECEIVER10_SHARE_VALUE = 0.1 * B
+const RECEIVER90_SHARE_VALUE = 0.9 * B
 const MIN_DEPOSIT = B
+const COINS_TRANSFER_GAS = 20 * K
+const TOKENS_TRANSFER_GAS = 200 * K
+const TOKEN_WALLET_DEPLOY_GAS = 100 * K
 const RATIO = 2 * B
 const CONVERTER_BALANCE_AFTER_DEPLOY = 0.1 * B
 
@@ -50,8 +53,8 @@ describe('Converter spec', function () {
     const owner = await deploySafeMultisigWallet(OWNER_DEPLOY_VALUE)
     const alise = await deploySafeMultisigWallet(ALISE_DEPLOY_VALUE)
     const bob = await deploySafeMultisigWallet(BOB_DEPLOY_VALUE)
-    const fund10 = new SafeMultisigWallet()
-    const fund90 = new SafeMultisigWallet()
+    const receiver10 = new SafeMultisigWallet()
+    const receiver90 = new SafeMultisigWallet()
     const converter = new Converter()
     const tokenRoot = new TokenRoot({
       initial: {
@@ -81,16 +84,19 @@ describe('Converter spec', function () {
       owner: await owner.address(),
       receivers: [
         {
-          wallet: await fund10.address(),
-          share: FUND10_SHARE_VALUE
+          wallet: await receiver10.address(),
+          share: RECEIVER10_SHARE_VALUE
         },
         {
-          wallet: await fund90.address(),
-          share: FUND90_SHARE_VALUE
+          wallet: await receiver90.address(),
+          share: RECEIVER90_SHARE_VALUE
         }
       ],
       wallet: await converterTokenWallet.address(),
       minDeposit: MIN_DEPOSIT,
+      coinsTransferGas: COINS_TRANSFER_GAS,
+      tokensTransferGas: TOKENS_TRANSFER_GAS,
+      tokenWalletDeployGas: TOKEN_WALLET_DEPLOY_GAS,
       ratio: RATIO,
       balance: CONVERTER_BALANCE_AFTER_DEPLOY,
       recipient: await Global.giver.contract.address(),
@@ -122,11 +128,11 @@ describe('Converter spec', function () {
       flags: 1,
       payload: await converter.payload.convert()
     })
+    await converter.wait()
+    await receiver10.wait()
+    await receiver90.wait()
     await aliseTokenWallet.wait()
     const aliseTokenWalletBalance = (await aliseTokenWallet.run.balance({ answerId: 0 })).value0
-    await fund10.wait()
-    await fund90.wait()
-    await converter.wait()
     assert.equal(aliseTokenWalletBalance, ALISE_TOKENS.toString())
 
     await bob.call.sendTransaction({
@@ -136,11 +142,11 @@ describe('Converter spec', function () {
       flags: 1,
       payload: await converter.payload.convert()
     })
+    await converter.wait()
+    await receiver10.wait()
+    await receiver90.wait()
     await bobTokenWallet.wait()
     const bobTokenWalletBalance = (await bobTokenWallet.run.balance({ answerId: 0 })).value0
-    await fund10.wait()
-    await fund90.wait()
-    await converter.wait()
     assert.equal(BOB_TOKENS.toString(), bobTokenWalletBalance)
 
     // TODO check funds

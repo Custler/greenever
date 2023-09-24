@@ -10,6 +10,9 @@
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
 				{"name":"wallet","type":"address"},
 				{"name":"minDeposit","type":"uint128"},
+				{"name":"coinsTransferGas","type":"uint128"},
+				{"name":"tokensTransferGas","type":"uint128"},
+				{"name":"tokenWalletDeployGas","type":"uint128"},
 				{"name":"ratio","type":"uint128"},
 				{"name":"balance","type":"uint128"},
 				{"name":"recipient","type":"address"}
@@ -65,6 +68,30 @@
 			]
 		},
 		{
+			"name": "changeTransferGas",
+			"inputs": [
+				{"name":"coinsTransferGas","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "changeTokensTransferGas",
+			"inputs": [
+				{"name":"tokensTransferGas","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "changeTokenWalletDeployGas",
+			"inputs": [
+				{"name":"tokenWalletDeployGas","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "terminate",
 			"inputs": [
 				{"name":"destination","type":"address"}
@@ -81,6 +108,9 @@
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
 				{"name":"wallet","type":"address"},
 				{"name":"minDeposit","type":"uint128"},
+				{"name":"coinsTransferGas","type":"uint128"},
+				{"name":"tokensTransferGas","type":"uint128"},
+				{"name":"tokenWalletDeployGas","type":"uint128"},
 				{"name":"ratio","type":"uint128"}
 			]
 		}
@@ -97,6 +127,9 @@
 		{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"_receivers","type":"tuple[]"},
 		{"name":"_wallet","type":"address"},
 		{"name":"_minDeposit","type":"uint128"},
+		{"name":"_coinsTransferGas","type":"uint128"},
+		{"name":"_tokensTransferGas","type":"uint128"},
+		{"name":"_tokenWalletDeployGas","type":"uint128"},
 		{"name":"_ratio","type":"uint128"}
 	]
 }

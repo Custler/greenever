@@ -1,4 +1,4 @@
-import { B, Global, SafeMultisigWallet, x0, ZERO_ADDRESS } from 'vasku'
+import { Global, SafeMultisigWallet, ZERO_ADDRESS, B, K } from 'vasku'
 import { Converter } from '../../build'
 
 const TERMINATE_CONVERTER_VALUE = 0.01 * B
@@ -12,6 +12,9 @@ type ConstructorInput = {
   wallet: string
   ratio: string | number | bigint
   minDeposit: string | number | bigint
+  coinsTransferGas: string | number | bigint
+  tokensTransferGas: string | number | bigint
+  tokenWalletDeployGas: string | number | bigint
   balance: string | number | bigint
   recipient: string
 }
@@ -27,6 +30,9 @@ export async function getDefaultInput (balance: number = B): Promise<Constructor
     ],
     wallet: ZERO_ADDRESS,
     minDeposit: B,
+    coinsTransferGas: 2 * K,
+    tokensTransferGas: 20 * K,
+    tokenWalletDeployGas: 10 * K,
     ratio: B,
     balance: balance,
     recipient: await Global.giver.contract.address(),

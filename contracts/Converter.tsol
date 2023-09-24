@@ -15,6 +15,7 @@ uint128 constant RATIO_ONE_TO_ONE = 1e9;
 uint16 constant ONLY_OWNER_ERROR = 101;
 uint16 constant INVALID_RECEIVERS_TOTAL_SHARE_ERROR = 102;
 uint16 constant TOO_MUCH_RECEIVERS_ERROR = 103;
+uint16 constant TOO_SMALL_DEPOSIT_ERROR = 104;
 
 ////////////////////
 // Transfer flags //
@@ -37,15 +38,19 @@ struct Receiver {
 }
 
 /**
- * Convert COINs to TOKENs and send COINs to receivers
+ * Converts COINs into TOKENs and distributes COINs between RECEIVERs.
  *
  * Legend
- *   COIN  - native blockchain coin e.g. EVER
- *   TOKEN - TIP3 token implementation https://github.com/broxus/tip3
+ *   COIN     - native blockchain coin e.g. EVER
+ *   TOKEN    - TIP3 token implementation https://github.com/broxus/tip3
+ *   RECEIVER - Contract address to which part of the deposited COINs is received
  *
  * TIP3 standard
  *   https://github.com/everscale-org/docs/blob/main/src/standard/TIP-3/1.md
  *   https://github.com/everscale-org/docs/blob/main/src/standard/TIP-3/2.md
+ *
+ * Gas
+ *   Gas for TOKENs transfer and sending COINs to RECEIVERs is taken from customer message
  */
 contract Converter {
     ///////////////
@@ -82,22 +87,21 @@ contract Converter {
         _;
     }
 
+    modifier depositIsEnough(uint128 value) {
+        require(value >= _minDeposit, TOO_SMALL_DEPOSIT_ERROR);
+        _;
+    }
+
     ///////////////
     // Variables //
     ///////////////
     address private _owner;
     Receiver[] private _receivers;
     address private _wallet;
-
-    /**
-     * Minimum customer deposit in COINs
-     *
-     * Money for TOKENs transfer and sending COINs to recipients is taken from money that the customer sends
-     * If you allow the user to send any value, then he can send small amount of money
-     * A small amount of money may not be enough for TOKENs transfer and sending COINs to recipients
-     * This is why the min Deposit variable is used
-     */
     uint128 private _minDeposit;
+    uint128 private _coinsTransferGas;
+    uint128 private _tokensTransferGas;
+    uint128 private _tokenWalletDeployGas;
 
     /**
      * 2_000_000_000 means 2   COINS for 1 TOKEN
@@ -114,6 +118,9 @@ contract Converter {
         Receiver[] receivers,
         address wallet,
         uint128 minDeposit,
+        uint128 coinsTransferGas,
+        uint128 tokensTransferGas,
+        uint128 tokenWalletDeployGas,
         uint128 ratio,
         uint128 balance,
         address recipient
@@ -122,26 +129,32 @@ contract Converter {
         _receivers = receivers;
         _wallet = wallet;
         _minDeposit = minDeposit;
+        _coinsTransferGas = coinsTransferGas;
+        _tokensTransferGas = tokensTransferGas;
+        _tokenWalletDeployGas = tokenWalletDeployGas;
         _ratio = ratio;
     }
 
     //////////////
     // External //
     //////////////
-    // TODO remove hardcode
-    function convert() public view {
-        uint128 availableShare = address(this).balance - 1 ever - 0.1 ever;
+    function convert() public view depositIsEnough(msg.value) {
+        uint128 coinsTransferValue = gasToValue(_coinsTransferGas * MAXIMUM_RECEIVERS);
+        uint128 tokenTransferValue = gasToValue(_tokensTransferGas);
+        uint128 tokenWalletDeployValue = gasToValue(_tokenWalletDeployGas);
+        uint128 availableCoins = address(this).balance - coinsTransferValue - tokenTransferValue - tokenWalletDeployValue;
+
         for (uint8 i = 0; i < _receivers.length; i++) {
             Receiver receiver = _receivers[i];
-            uint128 value = math.muldiv(availableShare, receiver.share, SHARE_100_PERCENT);
+            uint128 value = math.muldiv(availableCoins, receiver.share, SHARE_100_PERCENT);
             receiver.wallet.transfer(value, false, 1);
         }
 
         uint128 amount = math.muldiv(msg.value, RATIO_ONE_TO_ONE, _ratio);
-        ITokenWallet(_wallet).transfer{ value: 400 milli, flag: 0, bounce: true }(
+        ITokenWallet(_wallet).transfer{ value: tokenTransferValue, flag: 0, bounce: true }(
             amount,
             msg.sender,
-            200 milli,
+            tokenWalletDeployValue,
             address(this),
             false,
             TvmCell()
@@ -171,6 +184,18 @@ contract Converter {
         _minDeposit = minDeposit;
     }
 
+    function changeTransferGas(uint128 coinsTransferGas) public onlyOwner giveChange {
+        _coinsTransferGas = coinsTransferGas;
+    }
+
+    function changeTokensTransferGas(uint128 tokensTransferGas) public onlyOwner giveChange {
+        _tokensTransferGas = tokensTransferGas;
+    }
+
+    function changeTokenWalletDeployGas(uint128 tokenWalletDeployGas) public onlyOwner giveChange {
+        _tokenWalletDeployGas = tokenWalletDeployGas;
+    }
+
     function terminate(address destination) public view onlyOwner {
         destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
     }
@@ -186,6 +211,9 @@ contract Converter {
         Receiver[] receivers,
         address wallet,
         uint128 minDeposit,
+        uint128 coinsTransferGas,
+        uint128 tokensTransferGas,
+        uint128 tokenWalletDeployGas,
         uint128 ratio
     ) {
         return (
@@ -193,6 +221,9 @@ contract Converter {
             _receivers,
             _wallet,
             _minDeposit,
+            _coinsTransferGas,
+            _tokensTransferGas,
+            _tokenWalletDeployGas,
             _ratio
         );
     }
