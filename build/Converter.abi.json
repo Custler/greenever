@@ -68,7 +68,7 @@
 			]
 		},
 		{
-			"name": "setTransferGas",
+			"name": "setCoinsTransferGas",
 			"inputs": [
 				{"name":"coinsTransferGas","type":"uint128"}
 			],

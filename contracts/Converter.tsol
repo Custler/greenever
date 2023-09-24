@@ -184,7 +184,7 @@ contract Converter {
         _minDeposit = minDeposit;
     }
 
-    function setTransferGas(uint128 coinsTransferGas) public onlyOwner giveChange {
+    function setCoinsTransferGas(uint128 coinsTransferGas) public onlyOwner giveChange {
         _coinsTransferGas = coinsTransferGas;
     }
 
@@ -199,9 +199,6 @@ contract Converter {
     function terminate(address destination) public view onlyOwner {
         destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
     }
-
-    // TODO drain
-    // TODO withdraw tokens
 
     /////////////
     // Getters //
