@@ -229,7 +229,9 @@ contract Converter {
         );
     }
 
-
+    //////////////
+    // Internal //
+    //////////////
     function _withdrawToken(
         address destination,
         uint128 amount,
