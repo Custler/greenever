@@ -47,9 +47,16 @@ npx vasku test -n <network> [-c, --no-compile] [mocha cli options...]
 * `[-c, --no-compile]` - don't compile contract before test
 * `[mocha cli options...]` - Mocha CLI options. See [mochajs.org](https://mochajs.org/#command-line-usage)
 
-## View Converter address
+## View converter address
 
 ```shell
 npx vasku run address
 ```
 
+## View converter token wallet address
+
+```shell
+npx vasku run -n <network> token-wallet-address
+```
+
+* `<network>` - network from `vasku.config.ts`. Default: `se`
