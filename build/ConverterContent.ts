@@ -36,15 +36,15 @@ const ConverterContract = {
                         "type": "uint128"
                     },
                     {
-                        "name": "coinsTransferGas",
+                        "name": "coinsTransferValue",
                         "type": "uint128"
                     },
                     {
-                        "name": "tokensTransferGas",
+                        "name": "tokensTransferValue",
                         "type": "uint128"
                     },
                     {
-                        "name": "tokenWalletDeployGas",
+                        "name": "tokenWalletDeployValue",
                         "type": "uint128"
                     },
                     {
@@ -63,7 +63,7 @@ const ConverterContract = {
                 "outputs": []
             },
             {
-                "name": "convert",
+                "name": "up",
                 "inputs": [],
                 "outputs": []
             },
@@ -166,30 +166,30 @@ const ConverterContract = {
                 "outputs": []
             },
             {
-                "name": "setCoinsTransferGas",
+                "name": "setCoinsTransferValue",
                 "inputs": [
                     {
-                        "name": "coinsTransferGas",
+                        "name": "coinsTransferValue",
                         "type": "uint128"
                     }
                 ],
                 "outputs": []
             },
             {
-                "name": "setTokensTransferGas",
+                "name": "setTokensTransferValue",
                 "inputs": [
                     {
-                        "name": "tokensTransferGas",
+                        "name": "tokensTransferValue",
                         "type": "uint128"
                     }
                 ],
                 "outputs": []
             },
             {
-                "name": "setTokenWalletDeployGas",
+                "name": "setTokenWalletDeployValue",
                 "inputs": [
                     {
-                        "name": "tokenWalletDeployGas",
+                        "name": "tokenWalletDeployValue",
                         "type": "uint128"
                     }
                 ],
@@ -226,15 +226,15 @@ const ConverterContract = {
                         "type": "uint128"
                     },
                     {
-                        "name": "coinsTransferGas",
+                        "name": "coinsTransferValue",
                         "type": "uint128"
                     },
                     {
-                        "name": "tokensTransferGas",
+                        "name": "tokensTransferValue",
                         "type": "uint128"
                     },
                     {
-                        "name": "tokenWalletDeployGas",
+                        "name": "tokenWalletDeployValue",
                         "type": "uint128"
                     },
                     {
@@ -245,7 +245,18 @@ const ConverterContract = {
             }
         ],
         "data": [],
-        "events": [],
+        "events": [
+            {
+                "name": "TokenTransferFailed",
+                "inputs": [
+                    {
+                        "name": "amount",
+                        "type": "uint128"
+                    }
+                ],
+                "outputs": []
+            }
+        ],
         "fields": [
             {
                 "name": "_pubkey",
@@ -286,15 +297,15 @@ const ConverterContract = {
                 "type": "uint128"
             },
             {
-                "name": "_coinsTransferGas",
+                "name": "_coinsTransferValue",
                 "type": "uint128"
             },
             {
-                "name": "_tokensTransferGas",
+                "name": "_tokensTransferValue",
                 "type": "uint128"
             },
             {
-                "name": "_tokenWalletDeployGas",
+                "name": "_tokenWalletDeployValue",
                 "type": "uint128"
             },
             {
@@ -303,8 +314,8 @@ const ConverterContract = {
             }
         ]
     },
-    tvc: "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",
-    code: "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",
-    codeHash: "4d7d1a0db1489210bd471a23f511174bcd11f61cc6a3e0515f1602c8ecc83c62",
+    tvc: "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",
+    code: "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",
+    codeHash: "1dd7c398e56fb9884b5832ccfda1267b437e225a78d5f0a9246009862962094a",
 };
 export default ConverterContract;

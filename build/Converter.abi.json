@@ -10,9 +10,9 @@
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
 				{"name":"wallet","type":"address"},
 				{"name":"minDeposit","type":"uint128"},
-				{"name":"coinsTransferGas","type":"uint128"},
-				{"name":"tokensTransferGas","type":"uint128"},
-				{"name":"tokenWalletDeployGas","type":"uint128"},
+				{"name":"coinsTransferValue","type":"uint128"},
+				{"name":"tokensTransferValue","type":"uint128"},
+				{"name":"tokenWalletDeployValue","type":"uint128"},
 				{"name":"ratio","type":"uint128"},
 				{"name":"balance","type":"uint128"},
 				{"name":"recipient","type":"address"}
@@ -21,7 +21,7 @@
 			]
 		},
 		{
-			"name": "convert",
+			"name": "up",
 			"inputs": [
 			],
 			"outputs": [
@@ -94,25 +94,25 @@
 			]
 		},
 		{
-			"name": "setCoinsTransferGas",
+			"name": "setCoinsTransferValue",
 			"inputs": [
-				{"name":"coinsTransferGas","type":"uint128"}
+				{"name":"coinsTransferValue","type":"uint128"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "setTokensTransferGas",
+			"name": "setTokensTransferValue",
 			"inputs": [
-				{"name":"tokensTransferGas","type":"uint128"}
+				{"name":"tokensTransferValue","type":"uint128"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "setTokenWalletDeployGas",
+			"name": "setTokenWalletDeployValue",
 			"inputs": [
-				{"name":"tokenWalletDeployGas","type":"uint128"}
+				{"name":"tokenWalletDeployValue","type":"uint128"}
 			],
 			"outputs": [
 			]
@@ -126,9 +126,9 @@
 				{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"receivers","type":"tuple[]"},
 				{"name":"wallet","type":"address"},
 				{"name":"minDeposit","type":"uint128"},
-				{"name":"coinsTransferGas","type":"uint128"},
-				{"name":"tokensTransferGas","type":"uint128"},
-				{"name":"tokenWalletDeployGas","type":"uint128"},
+				{"name":"coinsTransferValue","type":"uint128"},
+				{"name":"tokensTransferValue","type":"uint128"},
+				{"name":"tokenWalletDeployValue","type":"uint128"},
 				{"name":"ratio","type":"uint128"}
 			]
 		}
@@ -136,6 +136,14 @@
 	"data": [
 	],
 	"events": [
+		{
+			"name": "TokenTransferFailed",
+			"inputs": [
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		}
 	],
 	"fields": [
 		{"name":"_pubkey","type":"uint256"},
@@ -145,9 +153,9 @@
 		{"components":[{"name":"wallet","type":"address"},{"name":"share","type":"uint32"}],"name":"_receivers","type":"tuple[]"},
 		{"name":"_wallet","type":"address"},
 		{"name":"_minDeposit","type":"uint128"},
-		{"name":"_coinsTransferGas","type":"uint128"},
-		{"name":"_tokensTransferGas","type":"uint128"},
-		{"name":"_tokenWalletDeployGas","type":"uint128"},
+		{"name":"_coinsTransferValue","type":"uint128"},
+		{"name":"_tokensTransferValue","type":"uint128"},
+		{"name":"_tokenWalletDeployValue","type":"uint128"},
 		{"name":"_ratio","type":"uint128"}
 	]
 }

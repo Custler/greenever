@@ -12,9 +12,9 @@ type ConstructorInput = {
   wallet: string
   ratio: string | number | bigint
   minDeposit: string | number | bigint
-  coinsTransferGas: string | number | bigint
-  tokensTransferGas: string | number | bigint
-  tokenWalletDeployGas: string | number | bigint
+  coinsTransferValue: string | number | bigint
+  tokensTransferValue: string | number | bigint
+  tokenWalletDeployValue: string | number | bigint
   balance: string | number | bigint
   recipient: string
 }
@@ -30,9 +30,9 @@ export async function getDefaultInput (balance: number = B): Promise<Constructor
     ],
     wallet: ZERO_ADDRESS,
     minDeposit: B,
-    coinsTransferGas: 2 * K,
-    tokensTransferGas: 20 * K,
-    tokenWalletDeployGas: 10 * K,
+    coinsTransferValue: 0.02 * B,
+    tokensTransferValue: 0.2 * B,
+    tokenWalletDeployValue: 0.1 * B,
     ratio: B,
     balance: balance,
     recipient: await Global.giver.contract.address(),

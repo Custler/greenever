@@ -215,67 +215,67 @@ describe('Converter owner', function () {
     await terminateSafeMultisigWallet(owner)
   })
 
-  it('setTransferGas', async (): Promise<void> => {
+  it('setTransferValue', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
-    const coinsTransferGas = Math.random() * Math.pow(2, 16) | 0
+    const coinsTransferValue = Math.random() * Math.pow(2, 16) | 0
     await owner.call.sendTransaction({
       dest: await converter.address(),
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.setCoinsTransferGas({ coinsTransferGas })
+      payload: await converter.payload.setCoinsTransferValue({ coinsTransferValue })
     })
     await converter.wait()
     await owner.wait()
 
     const info = await converter.run.info()
-    assert.equal(info.coinsTransferGas, coinsTransferGas.toString())
+    assert.equal(info.coinsTransferValue, coinsTransferValue.toString())
 
     await terminateConverter(owner, converter)
     await terminateSafeMultisigWallet(owner)
   })
 
-  it('setTokensTransferGas', async (): Promise<void> => {
+  it('setTokensTransferValue', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
-    const tokensTransferGas = Math.random() * Math.pow(2, 16) | 0
+    const tokensTransferValue = Math.random() * Math.pow(2, 16) | 0
     await owner.call.sendTransaction({
       dest: await converter.address(),
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.setTokensTransferGas({ tokensTransferGas })
+      payload: await converter.payload.setTokensTransferValue({ tokensTransferValue })
     })
     await converter.wait()
     await owner.wait()
 
     const info = await converter.run.info()
-    assert.equal(info.tokensTransferGas, tokensTransferGas.toString())
+    assert.equal(info.tokensTransferValue, tokensTransferValue.toString())
 
     await terminateConverter(owner, converter)
     await terminateSafeMultisigWallet(owner)
   })
 
-  it('setTokenWalletDeployGas', async (): Promise<void> => {
+  it('setTokenWalletDeployValue', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
 
-    const tokenWalletDeployGas = Math.random() * Math.pow(2, 16) | 0
+    const tokenWalletDeployValue = Math.random() * Math.pow(2, 16) | 0
     await owner.call.sendTransaction({
       dest: await converter.address(),
       value: OWNER_CALL_VALUE,
       bounce: true,
       flags: 0,
-      payload: await converter.payload.setTokenWalletDeployGas({ tokenWalletDeployGas })
+      payload: await converter.payload.setTokenWalletDeployValue({ tokenWalletDeployValue })
     })
     await converter.wait()
     await owner.wait()
 
     const info = await converter.run.info()
-    assert.equal(info.tokenWalletDeployGas, tokenWalletDeployGas.toString())
+    assert.equal(info.tokenWalletDeployValue, tokenWalletDeployValue.toString())
 
     await terminateConverter(owner, converter)
     await terminateSafeMultisigWallet(owner)

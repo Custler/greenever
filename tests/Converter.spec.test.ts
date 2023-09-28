@@ -24,9 +24,8 @@ const CONVERTER_DEPLOY_VALUE = B
 const RECEIVER10_SHARE_VALUE = 0.1 * B
 const RECEIVER90_SHARE_VALUE = 0.9 * B
 const MIN_DEPOSIT = B
-const COINS_TRANSFER_GAS = 20 * K
-const TOKENS_TRANSFER_GAS = 200 * K
-const TOKEN_WALLET_DEPLOY_GAS = 100 * K
+const COINS_TRANSFER_VALUE = 0.02 * B
+const TOKENS_TRANSFER_VALUE = 0.2 * B
 const RATIO = 2 * B
 const CONVERTER_BALANCE_AFTER_DEPLOY = 0.1 * B
 
@@ -41,6 +40,9 @@ const ALISE_TOKENS = BigInt(ALISE_CONVERT_VALUE) * BigInt(B) / BigInt(RATIO)
 // Bob buy TOKENs
 const BOB_CONVERT_VALUE = 3 * B
 const BOB_TOKENS = BigInt(BOB_CONVERT_VALUE) * BigInt(B) / BigInt(RATIO)
+
+// Up balance
+const UP_BALANCE_VALUE = 0.1 * B
 
 async function createTokenWallet (root: TokenRoot, contract: Contract): Promise<TokenWallet> {
   return new TokenWallet({
@@ -94,9 +96,9 @@ describe('Converter spec', function () {
       ],
       wallet: await converterTokenWallet.address(),
       minDeposit: MIN_DEPOSIT,
-      coinsTransferGas: COINS_TRANSFER_GAS,
-      tokensTransferGas: TOKENS_TRANSFER_GAS,
-      tokenWalletDeployGas: TOKEN_WALLET_DEPLOY_GAS,
+      coinsTransferValue: COINS_TRANSFER_VALUE,
+      tokensTransferValue: TOKENS_TRANSFER_VALUE,
+      tokenWalletDeployValue: TOKEN_WALLET_DEPLOY_VALUE,
       ratio: RATIO,
       balance: CONVERTER_BALANCE_AFTER_DEPLOY,
       recipient: await Global.giver.contract.address(),
@@ -126,7 +128,7 @@ describe('Converter spec', function () {
       value: ALISE_CONVERT_VALUE,
       bounce: true,
       flags: 1,
-      payload: await converter.payload.convert()
+      payload: await createTransferPayload()
     })
     await converter.wait()
     await receiver10.wait()
@@ -140,7 +142,7 @@ describe('Converter spec', function () {
       value: BOB_CONVERT_VALUE,
       bounce: true,
       flags: 1,
-      payload: await converter.payload.convert()
+      payload: await createTransferPayload()
     })
     await converter.wait()
     await receiver10.wait()
@@ -155,5 +157,17 @@ describe('Converter spec', function () {
     const offChainCoefficient = RECEIVER90_SHARE_VALUE / RECEIVER10_SHARE_VALUE
     const coefficientDifference = Math.abs(offChainCoefficient - onChainCoefficient)
     assert.isTrue(coefficientDifference < 0.001)
+
+    const balance = await converter.balance()
+    await owner.call.sendTransaction({
+      dest: await converter.address(),
+      value: UP_BALANCE_VALUE,
+      bounce: true,
+      flags: 1,
+      payload: await converter.payload.up(),
+    })
+    await converter.wait()
+    await owner.wait()
+    assert.isTrue(await converter.balance() - balance > 0)
   })
 })

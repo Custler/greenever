@@ -53,6 +53,11 @@ struct Receiver {
  *   Gas for TOKENs transfer and sending COINs to RECEIVERs is taken from customer message
  */
 contract Converter {
+    ////////////
+    // Events //
+    ////////////
+    event TokenTransferFailed(uint128 amount);
+
     ///////////////
     // Modifiers //
     ///////////////
@@ -99,9 +104,9 @@ contract Converter {
     Receiver[] private _receivers;
     address private _wallet;
     uint128 private _minDeposit;
-    uint128 private _coinsTransferGas;
-    uint128 private _tokensTransferGas;
-    uint128 private _tokenWalletDeployGas;
+    uint128 private _coinsTransferValue;
+    uint128 private _tokensTransferValue;
+    uint128 private _tokenWalletDeployValue;
 
     /**
      * 2_000_000_000 means 2   COINS for 1 TOKEN
@@ -118,9 +123,9 @@ contract Converter {
         Receiver[] receivers,
         address wallet,
         uint128 minDeposit,
-        uint128 coinsTransferGas,
-        uint128 tokensTransferGas,
-        uint128 tokenWalletDeployGas,
+        uint128 coinsTransferValue,
+        uint128 tokensTransferValue,
+        uint128 tokenWalletDeployValue,
         uint128 ratio,
         uint128 balance,
         address recipient
@@ -129,20 +134,17 @@ contract Converter {
         _receivers = receivers;
         _wallet = wallet;
         _minDeposit = minDeposit;
-        _coinsTransferGas = coinsTransferGas;
-        _tokensTransferGas = tokensTransferGas;
-        _tokenWalletDeployGas = tokenWalletDeployGas;
+        _coinsTransferValue = coinsTransferValue;
+        _tokensTransferValue = tokensTransferValue;
+        _tokenWalletDeployValue = tokenWalletDeployValue;
         _ratio = ratio;
     }
 
-    //////////////
-    // External //
-    //////////////
-    function convert() public view depositIsEnough(msg.value) {
-        uint128 coinsTransferValue = gasToValue(_coinsTransferGas * MAXIMUM_RECEIVERS);
-        uint128 tokenTransferValue = gasToValue(_tokensTransferGas);
-        uint128 tokenWalletDeployValue = gasToValue(_tokenWalletDeployGas);
-        uint128 availableCoins = address(this).balance - coinsTransferValue - tokenTransferValue - tokenWalletDeployValue;
+    /////////////////////////
+    // External // Receive //
+    /////////////////////////
+    receive() external view depositIsEnough(msg.value) {
+        uint128 availableCoins = address(this).balance - _coinsTransferValue * MAXIMUM_RECEIVERS - _tokensTransferValue;
 
         for (uint8 i = 0; i < _receivers.length; i++) {
             Receiver receiver = _receivers[i];
@@ -151,57 +153,69 @@ contract Converter {
         }
 
         uint128 amount = math.muldiv(msg.value, RATIO_ONE_TO_ONE, _ratio);
-        _withdrawToken(msg.sender, amount, tokenTransferValue, tokenWalletDeployValue);
+        _withdrawToken(msg.sender, amount, _tokensTransferValue, _tokenWalletDeployValue);
+    }
+
+    onBounce(TvmSlice body) external pure {
+        uint32 functionId = uint32(body.loadUint(32));
+        if (functionId == tvm.functionId(ITokenWallet.transfer)) {
+            uint128 amount = uint128(body.loadUint(128));
+            emit TokenTransferFailed(amount);
+        }
+    }
+
+    function up() external view {
+        // Do nothing to up contract balance
     }
 
     ////////////////////////////
     // External // Only owner //
     ////////////////////////////
-    function terminate(address destination) public view onlyOwner {
+    function terminate(address destination) external view onlyOwner {
         destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
     }
 
-    function withdrawTokens(address destination, uint128 amount) public view onlyOwner giveChange {
-        uint128 tokenTransferValue = gasToValue(_tokensTransferGas);
-        uint128 tokenWalletDeployValue = gasToValue(_tokenWalletDeployGas);
+    function withdrawTokens(address destination, uint128 amount) external view onlyOwner giveChange {
+        uint128 tokenTransferValue = gasToValue(_tokensTransferValue);
+        uint128 tokenWalletDeployValue = gasToValue(_tokenWalletDeployValue);
         _withdrawToken(destination, amount, tokenTransferValue, tokenWalletDeployValue);
     }
 
-    function drain(address destination, uint128 remainBalance) public view onlyOwner {
+    function drain(address destination, uint128 remainBalance) external view onlyOwner {
         tvm.rawReserve(remainBalance, 2);
         destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
     }
 
-    function setOwner(address owner) public onlyOwner giveChange {
+    function setOwner(address owner) external onlyOwner giveChange {
         _owner = owner;
     }
 
-    function setRatio(uint128 ratio) public onlyOwner giveChange {
+    function setRatio(uint128 ratio) external onlyOwner giveChange {
         _ratio = ratio;
     }
 
-    function setReceivers(Receiver[] receivers) public onlyOwner giveChange receiversIsValid(receivers) {
+    function setReceivers(Receiver[] receivers) external onlyOwner giveChange receiversIsValid(receivers) {
         _receivers = receivers;
     }
 
-    function setWallet(address wallet) public onlyOwner giveChange {
+    function setWallet(address wallet) external onlyOwner giveChange {
         _wallet = wallet;
     }
 
-    function setMinDeposit(uint128 minDeposit) public onlyOwner giveChange {
+    function setMinDeposit(uint128 minDeposit) external onlyOwner giveChange {
         _minDeposit = minDeposit;
     }
 
-    function setCoinsTransferGas(uint128 coinsTransferGas) public onlyOwner giveChange {
-        _coinsTransferGas = coinsTransferGas;
+    function setCoinsTransferValue(uint128 coinsTransferValue) external onlyOwner giveChange {
+        _coinsTransferValue = coinsTransferValue;
     }
 
-    function setTokensTransferGas(uint128 tokensTransferGas) public onlyOwner giveChange {
-        _tokensTransferGas = tokensTransferGas;
+    function setTokensTransferValue(uint128 tokensTransferValue) external onlyOwner giveChange {
+        _tokensTransferValue = tokensTransferValue;
     }
 
-    function setTokenWalletDeployGas(uint128 tokenWalletDeployGas) public onlyOwner giveChange {
-        _tokenWalletDeployGas = tokenWalletDeployGas;
+    function setTokenWalletDeployValue(uint128 tokenWalletDeployValue) external onlyOwner giveChange {
+        _tokenWalletDeployValue = tokenWalletDeployValue;
     }
 
     /////////////
@@ -212,9 +226,9 @@ contract Converter {
         Receiver[] receivers,
         address wallet,
         uint128 minDeposit,
-        uint128 coinsTransferGas,
-        uint128 tokensTransferGas,
-        uint128 tokenWalletDeployGas,
+        uint128 coinsTransferValue,
+        uint128 tokensTransferValue,
+        uint128 tokenWalletDeployValue,
         uint128 ratio
     ) {
         return (
@@ -222,9 +236,9 @@ contract Converter {
             _receivers,
             _wallet,
             _minDeposit,
-            _coinsTransferGas,
-            _tokensTransferGas,
-            _tokenWalletDeployGas,
+            _coinsTransferValue,
+            _tokensTransferValue,
+            _tokenWalletDeployValue,
             _ratio
         );
     }
