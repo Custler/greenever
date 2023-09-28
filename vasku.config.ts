@@ -66,53 +66,35 @@ const config: Config = {
        */
       giver: 'v3.se'
     },
-    'venom testnet': {
-      /**
-       * Query server GraphQL endpoints
-       * URL without `/graphql` at end
-       *
-       * You can use public endpoints
-       * @see https://evercloud.dev
-       *
-       * You can up own endpoint
-       * @see https://github.com/tonlabs/evernode-ds
-       * @see https://github.com/treeton-org/application-server
-       * @default ['http://localhost']
-       */
-      endpoints: process.env.VENOM_TESTNET_ENDPOINTS ? process.env.VENOM_TESTNET_ENDPOINTS.split(',') : [''],
-
-      /**
-       * Giver label
-       * Not SE giver need keys
-       */
-      giver: process.env.VENOM_TESTNET_GIVER ?? 'safeMultiSigWallet',
-
-      /**
-       * Giver keys
-       *
-       * Options:
-       * 1. Set `name` if you want to generate and read keys from `<keys directory>/<name>.json`
-       * 2. Set `file` if you want to read keys by absolute path
-       * 3. Make `name` and `file` empty if you want to generate and read keys from
-       *   `<keys directory>/<network name>.giver.json`
-       */
+    'ever mainnet': {
+      endpoints: process.env.EVER_MAINNET_ENDPOINTS ? process.env.EVER_MAINNET_ENDPOINTS.split(',') : [''],
+      giver: process.env.EVER_MAINNET_GIVER ?? 'safeMultiSigWallet',
       keys: {
-        /**
-         * Setup it if you want to use one key pair for different networks
-         *
-         * Actions:
-         * 1. Generate `<keys directory>/<name>.json` if file doesn't exist
-         * 2. Read keys from file
-         * @example
-         *   'giver'
-         */
+        name: process.env.EVER_MAINNET_KEYS_NAME,
+        file: process.env.EVER_MAINNET_KEYS_FILE
+      }
+    },
+    'ever testnet': {
+      endpoints: process.env.EVER_DEVNET_ENDPOINTS ? process.env.EVER_DEVNET_ENDPOINTS.split(',') : [''],
+      giver: process.env.EVER_DEVNET_GIVER ?? 'safeMultiSigWallet',
+      keys: {
+        name: process.env.EVER_DEVNET_KEYS_NAME,
+        file: process.env.EVER_DEVNET_KEYS_FILE
+      }
+    },
+    'ever fld': {
+      endpoints: process.env.EVER_FLD_ENDPOINTS ? process.env.EVER_FLD_ENDPOINTS.split(',') : [''],
+      giver: process.env.EVER_FLD_GIVER ?? 'safeMultiSigWallet',
+      keys: {
+        name: process.env.EVER_FLD_KEYS_NAME,
+        file: process.env.EVER_FLD_KEYS_FILE
+      }
+    },
+    'venom testnet': {
+      endpoints: process.env.VENOM_TESTNET_ENDPOINTS ? process.env.VENOM_TESTNET_ENDPOINTS.split(',') : [''],
+      giver: process.env.VENOM_TESTNET_GIVER ?? 'safeMultiSigWallet',
+      keys: {
         name: process.env.VENOM_TESTNET_KEYS_NAME,
-
-        /**
-         * Read keys by absolute path
-         * @example
-         *   '/home/user/keys/giver.keys.json'
-         */
         file: process.env.VENOM_TESTNET_KEYS_FILE,
       }
     },
@@ -122,14 +104,6 @@ const config: Config = {
       keys: {
         name: process.env.VENOM_DEVNET_KEYS_NAME,
         file: process.env.VENOM_DEVNET_KEYS_FILE
-      }
-    },
-    'ever fld': {
-      endpoints: process.env.EVER_FLD_ENDPOINTS ? process.env.EVER_FLD_ENDPOINTS.split(',') : [''],
-      giver: process.env.EVER_FLD_GIVER ?? 'safeMultiSigWallet',
-      keys: {
-        name: process.env.EVER_FLD_KEYS_NAME,
-        file: process.env.EVER_FLD_KEYS_FILE
       }
     }
   },
