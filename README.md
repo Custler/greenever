@@ -40,23 +40,32 @@ npx vasku giver <network> deploy
 ## Test
 
 ```shell
-npx vasku test -n <network> [-c, --no-compile] [mocha cli options...]
+npx vasku test [options...] [mocha cli options...]
 ```
 
-* `<network>` - network from `vasku.config.ts`. Default: `se`
+Options
+
+* `-n, --network <network>` - network from `vasku.config.ts`. Default: `se`
 * `[-c, --no-compile]` - don't compile contract before test
-* `[mocha cli options...]` - Mocha CLI options. See [mochajs.org](https://mochajs.org/#command-line-usage)
+* `[mocha cli options...]` - see [mochajs.org](https://mochajs.org/#command-line-usage)
 
-## View converter address
-
-```shell
-npx vasku run address
-```
-
-## View converter token wallet address
+## Deploy converter
 
 ```shell
-npx vasku run -n <network> token-wallet-address
+npx vasku run [options...] deploy
 ```
 
-* `<network>` - network from `vasku.config.ts`. Default: `se`
+Options
+
+* `-n, --network <network>` - network from `vasku.config.ts`. Default: `se`
+* `[-c, --no-compile]` - don't compile contract before test
+
+You can find converter config in `config/index.ts`
+
+## View converter info
+
+```shell
+npx vasku run [options...] info
+```
+
+* `-n, --network <network>` - network from `vasku.config.ts`. Default: `se`
