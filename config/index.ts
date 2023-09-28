@@ -57,7 +57,7 @@ export const config = {
       coinsTransferValue: 0.02 * B,
       tokensTransferValue: 0.2 * B,
       tokenWalletDeployValue: 0.1 * B,
-      ratio: 2 * B,
+      ratio: 0.125 * B,
       balance: 0.1 * B,
     }
   }
