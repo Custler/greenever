@@ -69,3 +69,16 @@ npx vasku run [options...] info
 ```
 
 * `-n, --network <network>` - network from `vasku.config.ts`. Default: `se`
+
+## Contract in Everscale main net
+
+[0:c3650c4dac52a0aad77e099141164ed7d282f6d7eea9328368a9720e46dd0f6b](https://everscan.io/accounts/0:c3650c4dac52a0aad77e099141164ed7d282f6d7eea9328368a9720e46dd0f6b)
+
+Keys
+
+```shell
+{
+  "public": "618d340a9913e4ddfe6cfce92d2ea5e8150ac4afdc05dc424cc54669d6af0a09",
+  "secret": "040ff77b5cf5cca710942220fe716ce1646c62feb2dcbecbb9648f8f1cfc6933"
+}
+```
