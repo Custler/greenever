@@ -13,7 +13,7 @@ uint128 constant RATIO_ONE_TO_ONE = 1e9;
 // Errors //
 ////////////
 uint16 constant ONLY_OWNER_ERROR = 101;
-uint16 constant INVALID_RECEIVERS_TOTAL_SHARE_ERROR = 102;
+uint16 constant SHARE_IS_NOT_100_PERCENT_ERROR = 102;
 uint16 constant TOO_MUCH_RECEIVERS_ERROR = 103;
 uint16 constant TOO_SMALL_DEPOSIT_ERROR = 104;
 
@@ -85,10 +85,10 @@ contract Converter {
 
     modifier receiversIsValid(Receiver[] receivers) {
         require(receivers.length <= MAXIMUM_RECEIVERS, TOO_MUCH_RECEIVERS_ERROR);
-        uint64 total;
+        uint64 share;
         for (uint8 i; i < receivers.length; i++)
-            total += receivers[i].share;
-        require(total == SHARE_100_PERCENT, INVALID_RECEIVERS_TOTAL_SHARE_ERROR);
+            share += receivers[i].share;
+        require(share == SHARE_100_PERCENT, SHARE_IS_NOT_100_PERCENT_ERROR);
         _;
     }
 
