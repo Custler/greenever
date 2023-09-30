@@ -14,14 +14,14 @@ const config: Config = {
      * @see https://github.com/tonlabs/TON-Solidity-Compiler
      * @default 'latest'
      */
-    compiler: 'latest',
+    compiler: '0.71.0',
 
     /**
      * TVM linker
      * @see https://github.com/tonlabs/TVM-linker
      * @default 'latest'
      */
-    linker: 'latest',
+    linker: '0.20.6',
 
     /**
      * List of source files for compilation in contract directory in **glob** format
