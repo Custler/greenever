@@ -20,7 +20,7 @@ uint16 constant TOO_SMALL_DEPOSIT_ERROR = 104;
 ////////////////////
 // Transfer flags //
 ////////////////////
-uint8 constant TRANSFER_ALL_REMAINING_BALANCE = 128;
+uint8 constant ALL_REMAINING_BALANCE = 128;
 uint8 constant DESTROY_IF_BALANCE_IS_ZERO = 32;
 
 ////////////////
@@ -74,13 +74,13 @@ contract Converter {
     modifier reserveBalance (uint128 balance, address recipient) {
         tvm.rawReserve(balance, 2);
         _;
-        recipient.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
+        recipient.transfer(0, false, ALL_REMAINING_BALANCE);
     }
 
     modifier giveChange () {
         tvm.rawReserve(address(this).balance - msg.value, 2);
         _;
-        msg.sender.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
+        msg.sender.transfer(0, false, ALL_REMAINING_BALANCE);
     }
 
     modifier receiversIsValid(Receiver[] receivers) {
@@ -172,7 +172,7 @@ contract Converter {
     // External // Only owner //
     ////////////////////////////
     function terminate(address destination) external view onlyOwner {
-        destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
+        destination.transfer(0, false, ALL_REMAINING_BALANCE + DESTROY_IF_BALANCE_IS_ZERO);
     }
 
     function withdrawTokens(address destination, uint128 amount) external view onlyOwner giveChange {
@@ -183,7 +183,7 @@ contract Converter {
 
     function drain(address destination, uint128 remainBalance) external view onlyOwner {
         tvm.rawReserve(remainBalance, 2);
-        destination.transfer(0, false, TRANSFER_ALL_REMAINING_BALANCE);
+        destination.transfer(0, false, ALL_REMAINING_BALANCE);
     }
 
     function setOwner(address owner) external onlyOwner giveChange {
