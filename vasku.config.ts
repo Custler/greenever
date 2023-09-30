@@ -66,7 +66,7 @@ const config: Config = {
        */
       giver: 'v3.se'
     },
-    'ever mainnet': {
+    'main': {
       endpoints: process.env.EVER_MAINNET_ENDPOINTS ? process.env.EVER_MAINNET_ENDPOINTS.split(',') : [''],
       giver: process.env.EVER_MAINNET_GIVER ?? 'safeMultiSigWallet',
       keys: {
@@ -74,7 +74,7 @@ const config: Config = {
         file: process.env.EVER_MAINNET_KEYS_FILE
       }
     },
-    'ever testnet': {
+    'test': {
       endpoints: process.env.EVER_DEVNET_ENDPOINTS ? process.env.EVER_DEVNET_ENDPOINTS.split(',') : [''],
       giver: process.env.EVER_DEVNET_GIVER ?? 'safeMultiSigWallet',
       keys: {
@@ -82,7 +82,7 @@ const config: Config = {
         file: process.env.EVER_DEVNET_KEYS_FILE
       }
     },
-    'ever fld': {
+    'fld': {
       endpoints: process.env.EVER_FLD_ENDPOINTS ? process.env.EVER_FLD_ENDPOINTS.split(',') : [''],
       giver: process.env.EVER_FLD_GIVER ?? 'safeMultiSigWallet',
       keys: {
@@ -90,7 +90,7 @@ const config: Config = {
         file: process.env.EVER_FLD_KEYS_FILE
       }
     },
-    'venom testnet': {
+    'venom-test': {
       endpoints: process.env.VENOM_TESTNET_ENDPOINTS ? process.env.VENOM_TESTNET_ENDPOINTS.split(',') : [''],
       giver: process.env.VENOM_TESTNET_GIVER ?? 'safeMultiSigWallet',
       keys: {
@@ -98,7 +98,7 @@ const config: Config = {
         file: process.env.VENOM_TESTNET_KEYS_FILE,
       }
     },
-    'venom devnet': {
+    'venom-dev': {
       endpoints: process.env.VENOM_DEVNET_ENDPOINTS ? process.env.VENOM_DEVNET_ENDPOINTS.split(',') : [''],
       giver: process.env.VENOM_DEVNET_GIVER ?? 'safeMultiSigWallet',
       keys: {
