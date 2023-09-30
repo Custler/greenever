@@ -29,7 +29,7 @@ async function createConverter (input: any = {}): Promise<Converter> {
   return await deployConverter(CONVERTER_DEPLOY_VALUE, CONVERTER_BALANCE, input)
 }
 
-describe('Converter owner', function () {
+describe('Converter only owner', function () {
   it('deploy and get info', async (): Promise<void> => {
     const owner = await createOwner()
     const input = {
