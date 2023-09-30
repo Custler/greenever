@@ -141,7 +141,6 @@ describe('Converter owner', function () {
     await terminateSafeMultisigWallet(owner)
   })
 
-
   it('setReceivers', async (): Promise<void> => {
     const owner = await createOwner()
     const converter = await createConverter({ owner: await owner.address() })
