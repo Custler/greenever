@@ -29,7 +29,7 @@ npx vasku giver <network> info
 
 * `<network>` - network from `vasku.config.ts`. Default: `se`
 
-### Send coins to giver address and deploy if giver not deployed
+### Deploy giver
 
 ```shell
 npx vasku giver <network> deploy
@@ -46,7 +46,7 @@ npx vasku test [options...] [mocha cli options...]
 Options
 
 * `-n, --network <network>` - network from `vasku.config.ts`. Default: `se`
-* `[-c, --no-compile]` - don't compile contract before test
+* `[-c, --no-compile]` - don't compile contract before
 * `[mocha cli options...]` - see [mochajs.org](https://mochajs.org/#command-line-usage)
 
 ## Deploy converter
@@ -58,7 +58,7 @@ npx vasku run [options...] deploy
 Options
 
 * `-n, --network <network>` - network from `vasku.config.ts`. Default: `se`
-* `[-c, --no-compile]` - don't compile contract before test
+* `[-c, --no-compile]` - don't compile contract before
 
 You can find converter config in `config/index.ts`
 
